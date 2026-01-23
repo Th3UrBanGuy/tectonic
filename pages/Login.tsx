@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, Mail, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Lock, User, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
+import TectonicLogo from '../components/layout/TectonicLogo';
+import ThemeToggle from '../components/ui/ThemeToggle';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -11,7 +13,6 @@ const Login: React.FC = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,133 +45,212 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-gray-900 to-black p-4">
-            {/* Background Effects */}
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/10 rounded-full blur-[100px] animate-pulse" />
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] animate-pulse delay-1000" />
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-black relative overflow-hidden transition-colors duration-500">
+            {/* Background Gradients */}
+            <div className="absolute inset-0 bg-white dark:bg-black transition-colors duration-500">
+                {/* Light Mode Gradients */}
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:opacity-0 opacity-100 transition-opacity duration-500" />
+
+                {/* Dark Mode Gradients */}
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-black to-slate-950 opacity-0 dark:opacity-100 transition-opacity duration-500" />
             </div>
 
+            {/* Animated Blobs */}
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="relative w-full max-w-md"
-            >
-                {/* Logo */}
-                <div className="text-center mb-8">
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.2, type: 'spring' }}
-                        className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-purple-600 mb-4"
-                    >
-                        <Lock className="w-8 h-8 text-white" />
-                    </motion.div>
-                    <h1 className="text-2xl font-bold text-white mb-2">Admin Portal</h1>
-                    <p className="text-gray-400 text-sm">Sign in to access the dashboard</p>
-                </div>
+                animate={{
+                    opacity: [0.4, 0.6, 0.4],
+                    scale: [1, 1.1, 1],
+                    x: [0, 20, 0],
+                    y: [0, -20, 0]
+                }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-brand-500/10 to-transparent rounded-full blur-3xl dark:from-brand-500/10 dark:opacity-5"
+            />
+            <motion.div
+                animate={{
+                    opacity: [0.4, 0.6, 0.4],
+                    scale: [1.1, 1, 1.1],
+                    x: [0, -20, 0],
+                    y: [0, 20, 0]
+                }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-purple-500/10 to-transparent rounded-full blur-3xl dark:from-purple-500/10 dark:opacity-5"
+            />
 
-                {/* Login Form */}
-                <motion.form
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    onSubmit={handleSubmit}
-                    className="bg-gray-900/50 backdrop-blur-xl p-8 rounded-2xl border border-gray-700/50 shadow-2xl"
+            {/* Noise Texture Overlay */}
+            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.015] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')]" />
+
+            <div className="absolute top-6 right-6 z-20">
+                <ThemeToggle />
+            </div>
+
+            <div className="relative z-10 w-full max-w-[480px] px-6">
+                {/* Back Button */}
+                <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="mb-8"
                 >
-                    {/* Error Message */}
-                    {error && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex items-center gap-2 p-3 mb-6 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"
-                        >
-                            <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                            <span>{error}</span>
-                        </motion.div>
-                    )}
+                    <Link
+                        to="/"
+                        className="inline-flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors duration-300 group"
+                    >
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
+                        <span className="text-sm font-medium dark:font-light tracking-wide">Back to Home</span>
+                    </Link>
+                </motion.div>
 
-                    {/* Email Field */}
-                    <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Email Address
-                        </label>
-                        <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors"
-                                placeholder="admin@tectonic.com"
-                                required
-                                disabled={isSubmitting}
-                            />
-                        </div>
-                    </div>
+                {/* Main Card */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                    className="relative"
+                >
+                    {/* Glass Card */}
+                    <div className="relative bg-white/70 dark:bg-white/[0.02] backdrop-blur-xl border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-8 md:p-12 shadow-2xl shadow-slate-200/50 dark:shadow-black/50">
+                        {/* Subtle Inner Glow */}
+                        <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-white/20 to-transparent pointer-events-none dark:from-white/[0.03]" />
 
-                    {/* Password Field */}
-                    <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Password
-                        </label>
-                        <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                            <input
-                                type={showPassword ? 'text' : 'password'}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full pl-10 pr-12 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors"
-                                placeholder="••••••••"
-                                required
-                                disabled={isSubmitting}
+                        {/* Header */}
+                        <div className="relative mb-10">
+                            <div className="flex items-center justify-between mb-3">
+                                <motion.h1
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.4, duration: 0.8 }}
+                                    className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight"
+                                >
+                                    Portal
+                                </motion.h1>
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 0.5, duration: 0.6 }}
+                                >
+                                    <TectonicLogo />
+                                </motion.div>
+                            </div>
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: "60px" }}
+                                transition={{ delay: 0.6, duration: 0.8 }}
+                                className="h-[2px] bg-gradient-to-r from-brand-500 to-transparent"
                             />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                            <motion.p
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.5, duration: 0.8 }}
+                                className="text-slate-500 dark:text-slate-400 text-sm mt-4 font-normal dark:font-light tracking-wide"
                             >
-                                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                            </button>
+                                Secure authentication required
+                            </motion.p>
                         </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* Email Input */}
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.6, duration: 0.6 }}
+                            >
+                                <label className="block text-xs font-semibold dark:font-medium text-slate-500 dark:text-slate-500 mb-3 tracking-widest uppercase">
+                                    Email
+                                </label>
+                                <div className="relative group">
+                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-600 group-focus-within:text-brand-500 transition-colors duration-300" />
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] hover:border-brand-500/30 dark:hover:border-white/[0.12] focus:border-brand-500/50 rounded-xl pl-12 pr-4 py-4 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-4 focus:ring-brand-500/10 dark:focus:ring-brand-500/30 transition-all duration-300"
+                                        placeholder="admin@tectonic.com"
+                                        required
+                                        disabled={isSubmitting}
+                                    />
+                                </div>
+                            </motion.div>
+
+                            {/* Password Input */}
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.7, duration: 0.6 }}
+                            >
+                                <label className="block text-xs font-semibold dark:font-medium text-slate-500 dark:text-slate-500 mb-3 tracking-widest uppercase">
+                                    Password
+                                </label>
+                                <div className="relative group">
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-600 group-focus-within:text-brand-500 transition-colors duration-300" />
+                                    <input
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="w-full bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] hover:border-brand-500/30 dark:hover:border-white/[0.12] focus:border-brand-500/50 rounded-xl pl-12 pr-4 py-4 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-4 focus:ring-brand-500/10 dark:focus:ring-brand-500/30 transition-all duration-300"
+                                        placeholder="Enter your password"
+                                        required
+                                        disabled={isSubmitting}
+                                    />
+                                </div>
+                            </motion.div>
+
+                            {/* Error Message */}
+                            {error && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="p-4 bg-red-50 border border-red-200 dark:bg-red-500/10 dark:border-red-500/20 rounded-xl flex items-center gap-2"
+                                >
+                                    <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
+                                    <p className="text-sm text-red-600 dark:text-red-400 font-medium dark:font-light">
+                                        {error}
+                                    </p>
+                                </motion.div>
+                            )}
+
+                            {/* Submit Button */}
+                            <motion.button
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.8, duration: 0.6 }}
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full mt-8 group relative overflow-hidden bg-slate-900 dark:bg-white/[0.05] hover:bg-slate-800 dark:hover:bg-white/[0.08] border border-transparent dark:border-white/[0.1] hover:dark:border-brand-500/50 rounded-xl py-4 transition-all duration-500 shadow-xl shadow-brand-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {/* Hover Gradient */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-brand-500/0 via-brand-500/10 to-brand-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                                <div className="relative flex items-center justify-center gap-3">
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader2 className="w-5 h-5 animate-spin text-white" />
+                                            <span className="text-white font-medium tracking-wide">
+                                                Authenticating...
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="text-white font-medium tracking-wide">
+                                                Authenticate
+                                            </span>
+                                            <ArrowRight className="w-5 h-5 text-brand-400 dark:text-brand-500 group-hover:translate-x-1 transition-transform duration-300" />
+                                        </>
+                                    )}
+                                </div>
+                            </motion.button>
+                        </form>
                     </div>
 
-                    {/* Submit Button */}
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full py-3 bg-gradient-to-r from-brand-600 to-purple-600 hover:from-brand-500 hover:to-purple-500 text-white font-semibold rounded-lg transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {isSubmitting ? (
-                            <>
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                                <span>Authenticating...</span>
-                            </>
-                        ) : (
-                            <>
-                                <Lock className="w-5 h-5" />
-                                <span>Sign In</span>
-                            </>
-                        )}
-                    </button>
-
-                    {/* Footer */}
-                    <p className="text-center text-gray-500 text-xs mt-6">
-                        Protected by Techtonic Security
-                    </p>
-                </motion.form>
-
-                {/* Back to Home */}
-                <div className="text-center mt-6">
-                    <a
-                        href="/"
-                        className="text-gray-400 hover:text-brand-400 text-sm transition-colors"
-                    >
-                        ← Back to Home
-                    </a>
-                </div>
-            </motion.div>
+                    {/* Bottom Accent Line */}
+                    <motion.div
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{ delay: 1, duration: 0.8 }}
+                        className="h-[1px] bg-gradient-to-r from-transparent via-brand-500/30 to-transparent mt-8"
+                    />
+                </motion.div>
+            </div>
         </div>
     );
 };
