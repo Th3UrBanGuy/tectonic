@@ -1,10 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { TEAM } from '../data/team';
-import { COMPANY_CONTENT, COMPANY_ACHIEVEMENTS } from '../data/pages/company';
+import { useContent } from '../components/ContentContext';
+import Loader from '../components/Loader';
 import { Linkedin, Award, ShieldCheck, Globe, Zap, Target, Users, Trophy } from 'lucide-react';
 
 const Company = () => {
+    const { companyContent, team, isLoading } = useContent();
+
     // Icon mapping for achievements
     const iconMap: Record<string, any> = {
         "ISO 27001 Certified": ShieldCheck,
@@ -12,6 +14,14 @@ const Company = () => {
         "Carbon Neutral": Globe,
         "Enterprise Security Award": Trophy
     };
+
+    if (isLoading || !companyContent.hero) {
+        return <Loader />;
+    }
+
+    const COMPANY_CONTENT = companyContent;
+    const COMPANY_ACHIEVEMENTS = companyContent.achievements || [];
+    const TEAM = team;
 
     return (
         <div className="min-h-screen pt-24 pb-24 bg-white dark:bg-[#050505] text-slate-900 dark:text-white overflow-hidden relative font-sans transition-colors duration-500">

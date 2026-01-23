@@ -2,10 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Linkedin, Facebook, Instagram, Twitter, Github, Globe } from 'lucide-react';
 import TectonicLogo from './TectonicLogo';
-import { CONTACT_INFO } from '../../data/pages/contact';
-import { WINGS } from '../../data/wings';
+import { useContent } from '../ContentContext';
 
 const Footer = () => {
+  const { contactConfig, wings } = useContent();
+
   const socialIcons: { [key: string]: React.ElementType } = {
     linkedin: Linkedin,
     facebook: Facebook,
@@ -13,6 +14,10 @@ const Footer = () => {
     twitter: Twitter,
     github: Github
   };
+
+  const address = contactConfig.address || { street: '', sector: '' };
+  const contact = contactConfig.contact || { email: '', phone: '' };
+  const socials = contactConfig.socials || {};
 
   return (
     <footer className="bg-slate-50 dark:bg-black border-t border-slate-200 dark:border-gray-800 py-12 px-6 relative overflow-hidden transition-colors duration-500">
@@ -29,7 +34,7 @@ const Footer = () => {
         <div>
           <h3 className="font-bold mb-4 text-slate-900 dark:text-white">Ecosystem</h3>
           <ul className="space-y-2 text-sm text-slate-600 dark:text-gray-400">
-            {WINGS.map((wing) => (
+            {wings.map((wing) => (
               <li key={wing.id}>
                 <Link
                   to={`/wings?id=${wing.id}`}
@@ -51,24 +56,24 @@ const Footer = () => {
         <div>
           <h3 className="font-bold mb-4 text-slate-900 dark:text-white">Connect</h3>
           <p className="text-sm text-slate-600 dark:text-gray-400 mb-4">
-            HQ: {CONTACT_INFO.address.street}, {CONTACT_INFO.address.sector}
+            HQ: {address.street}, {address.sector}
           </p>
           <div className="flex flex-col space-y-2 mb-6">
-            <a href={`mailto:${CONTACT_INFO.contact.email}`} className="text-sm text-slate-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors flex items-center gap-2">
-              <span className="font-semibold text-slate-900 dark:text-white">Email:</span> {CONTACT_INFO.contact.email}
+            <a href={`mailto:${contact.email}`} className="text-sm text-slate-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors flex items-center gap-2">
+              <span className="font-semibold text-slate-900 dark:text-white">Email:</span> {contact.email}
             </a>
-            <a href={`tel:${CONTACT_INFO.contact.phone}`} className="text-sm text-slate-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors flex items-center gap-2">
-              <span className="font-semibold text-slate-900 dark:text-white">Phone:</span> {CONTACT_INFO.contact.phone}
+            <a href={`tel:${contact.phone}`} className="text-sm text-slate-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors flex items-center gap-2">
+              <span className="font-semibold text-slate-900 dark:text-white">Phone:</span> {contact.phone}
             </a>
           </div>
 
           <div className="flex gap-3">
-            {Object.entries(CONTACT_INFO.socials).map(([platform, link]) => {
+            {Object.entries(socials).map(([platform, link]) => {
               const Icon = socialIcons[platform] || Globe;
               return (
                 <a
                   key={platform}
-                  href={link}
+                  href={link as string}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-200 dark:bg-gray-800 text-slate-600 dark:text-gray-400 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-600 transition-all"

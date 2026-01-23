@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, Sparkles } from 'lucide-react';
-import { ProjectItem } from '../types';
-import { getProjects } from '../services/contentStorage';
+import { useContent } from '../components/ContentContext';
+import Loader from '../components/Loader';
 import FeaturedProjectCard from '../components/ui/FeaturedProjectCard';
-import { PORTFOLIO_CONTENT } from '../data/pages/portfolio';
 
 const Portfolio = () => {
   const [filter, setFilter] = useState<string>('All');
-  const [projects, setProjects] = useState<ProjectItem[]>([]);
-  const filters = PORTFOLIO_CONTENT.filters;
 
-  useEffect(() => {
-    setProjects(getProjects());
-  }, []);
+  const { projects, portfolioContent, isLoading } = useContent();
+
+  if (isLoading || !portfolioContent.header) {
+    return <Loader />;
+  }
+
+  const PORTFOLIO_CONTENT = portfolioContent;
+  const filters = PORTFOLIO_CONTENT.filters || ['All'];
 
   const filteredProjects = filter === 'All'
     ? projects

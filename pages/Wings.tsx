@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { WINGS } from '../data/wings';
+import { useContent } from '../components/ContentContext';
+import Loader from '../components/Loader';
 import WingHeroCard from '../components/ui/WingHeroCard';
 import CapabilityCard from '../components/ui/CapabilityCard';
 import TechStackGrid from '../components/ui/TechStackGrid';
@@ -10,6 +11,9 @@ import AchievementCard from '../components/ui/AchievementCard';
 import MissionCard from '../components/ui/MissionCard';
 
 const Wings = () => {
+  const { wings, isLoading } = useContent();
+  const WINGS = wings;
+
   const [searchParams, setSearchParams] = useSearchParams();
   const activeWingId = searchParams.get('id') || 'software';
   const activeWing = WINGS.find(w => w.id === activeWingId) || WINGS[0];
@@ -17,6 +21,10 @@ const Wings = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [activeWingId]);
+
+  if (isLoading || !activeWing) {
+    return <Loader />;
+  }
 
   // Check if this wing has team data
   const hasTeamData = activeWing.teamName && activeWing.teamLogo;

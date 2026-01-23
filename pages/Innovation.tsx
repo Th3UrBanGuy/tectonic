@@ -6,8 +6,8 @@ import {
   Lock, Calendar, Activity, CheckCircle2,
   Code, Server, Database, Smartphone, Globe, Shield, Sparkles, Rocket, Star
 } from 'lucide-react';
-import { TechStackItem, RoadmapItem } from '../types';
-import { INNOVATION_TECH_STACK, INNOVATION_ROADMAP, INNOVATION_CONTENT } from '../data/pages/innovation';
+import { useContent } from '../components/ContentContext';
+import Loader from '../components/Loader';
 
 // Icon mapping
 const iconMap: Record<string, any> = {
@@ -16,9 +16,24 @@ const iconMap: Record<string, any> = {
 };
 
 const Innovation = () => {
-  const techStack = INNOVATION_TECH_STACK;
-  const roadmap = INNOVATION_ROADMAP;
+  const { innovationContent, techStack, roadmap, isLoading } = useContent();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  if (isLoading || !innovationContent.hero) {
+    return <Loader />;
+  }
+
+  const INNOVATION_CONTENT = innovationContent;
+  const INNOVATION_TECH_STACK = techStack;
+  const INNOVATION_ROADMAP = roadmap;
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {

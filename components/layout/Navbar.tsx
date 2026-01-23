@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, User, Sun, Moon, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { WINGS } from '../../data/wings';
+import { useContent } from '../ContentContext';
 import TectonicLogo from './TectonicLogo';
 
 interface NavbarProps {
@@ -12,6 +12,7 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, className = '' }) => {
+  const { wings } = useContent();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
@@ -50,7 +51,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, className = '' }) =
               {/* Dropdown */}
               <div className="absolute top-full left-1/2 -translate-x-1/2 mt-6 w-64 bg-white dark:bg-black/90 border border-slate-200 dark:border-white/10 rounded-lg p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 backdrop-blur-xl shadow-xl">
                 <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-black border-t border-l border-slate-200 dark:border-white/10 rotate-45"></div>
-                {WINGS.map((wing) => (
+                {wings.map((wing) => (
                   <Link
                     key={wing.id}
                     to={`/wings?id=${wing.id}`}

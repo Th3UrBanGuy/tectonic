@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { CONTACT_INFO } from '../data/pages/contact';
 import { MapPin, Mail, Calendar, CheckCircle, User, Phone, Building, Briefcase, DollarSign, MessageSquare, Linkedin, Facebook, Instagram, Twitter, Github, Globe } from 'lucide-react';
 import Stepper, { Step } from '../components/ui/Stepper';
+import { useContent } from '../components/ContentContext';
+import Loader from '../components/Loader';
 
 const Contact = () => {
+  const { contactConfig, isLoading } = useContent();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -16,7 +18,9 @@ const Contact = () => {
     message: ''
   });
 
-  const { address, contact, socials } = CONTACT_INFO;
+  if (isLoading) return <Loader />;
+
+  const { address, contact, socials } = contactConfig;
 
   const handleFinalSubmit = () => {
     console.log('Form Submitted:', formData);
@@ -77,6 +81,7 @@ const Contact = () => {
                 <div className="flex flex-wrap gap-3 mt-2">
                   {Object.entries(socials).map(([platform, link]) => {
                     const Icon = socialIcons[platform] || Globe;
+                    if (!link) return null; // Skip empty links
                     return (
                       <a
                         key={platform}

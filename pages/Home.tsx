@@ -2,11 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Globe, Activity, Cpu } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { WINGS } from '../data/wings';
-import { PROJECTS } from '../data/projects';
-import { PARTNERSHIPS } from '../data/partnerships';
-import { HOME_CONTENT } from '../data/pages/home';
-
+import { useContent } from '../components/ContentContext';
+import Loader from '../components/Loader';
 
 // Extracted Components
 const ThreeDBackground = React.lazy(() => import('../components/home/ThreeDBackground'));
@@ -18,6 +15,21 @@ import FeaturedProjectCard from '../components/ui/FeaturedProjectCard';
 import InfinitePartnershipCarousel from '../components/ui/InfinitePartnershipCarousel';
 
 const Home = () => {
+  const {
+    homeContent,
+    projects,
+    partnerships,
+    isLoading
+  } = useContent();
+
+  const HOME_CONTENT = homeContent;
+  const PROJECTS = projects;
+  const PARTNERSHIPS = partnerships;
+
+  if (isLoading || !HOME_CONTENT.hero) {
+    return <Loader />;
+  }
+
   return (
     <>
       <section className="relative h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-[#050505] transition-colors duration-500 pt-24">
