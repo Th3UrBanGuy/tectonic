@@ -63,3 +63,4 @@ coverage/
 # IMPORTANT: The .env file contains your DATABASE_URL and
 # JWT_SECRET. NEVER commit this file to git!
 # ============================================================
+.vercel
