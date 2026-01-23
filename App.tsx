@@ -4,6 +4,7 @@ import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 // Context
 import { ThemeProvider, useTheme } from './components/ThemeContext';
 import { ContentProvider } from './components/ContentContext';
+import { AuthProvider } from './components/AuthContext';
 
 // Layout
 import Navbar from './components/layout/Navbar';
@@ -13,6 +14,9 @@ import { AnimatePresence } from 'framer-motion';
 import PageSkeleton from './components/ui/PageSkeleton';
 import ContactTopBar from './components/layout/ContactTopBar';
 
+// Auth
+import ProtectedRoute from './components/ProtectedRoute';
+
 // Pages (Lazy Loaded)
 const Home = React.lazy(() => import('./pages/Home'));
 const Wings = React.lazy(() => import('./pages/Wings'));
@@ -21,53 +25,61 @@ const Portfolio = React.lazy(() => import('./pages/Portfolio'));
 const Company = React.lazy(() => import('./pages/Company'));
 const Contact = React.lazy(() => import('./pages/Contact'));
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const Login = React.lazy(() => import('./pages/Login'));
 
 const ContentWrapper = () => {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const isDashboard = location.pathname.startsWith('/dashboard');
+  const isLogin = location.pathname === '/login';
 
   return (
     <SystemStatusWrapper>
       <div className="flex flex-col min-h-screen font-sans text-slate-900 bg-white dark:bg-dark-bg dark:text-gray-100 transition-colors duration-500">
-        {!isDashboard && (
+        {!isDashboard && !isLogin && (
           <>
             <ContactTopBar />
             <Navbar theme={theme} toggleTheme={toggleTheme} className="top-10" />
           </>
         )}
-        {/* Added flex-grow to ensure footer pushes down and pt-0 to allow hero sections to touch top if needed, 
-            but ensured z-index layering is correct. Added pt-10 to account for ContactBar header. */}
-        <main className={`flex-grow relative z-0 ${isDashboard ? 'h-screen' : 'pt-10'}`}>
+        <main className={`flex-grow relative z-0 ${isDashboard || isLogin ? 'h-screen' : 'pt-10'}`}>
           <React.Suspense fallback={<PageSkeleton />}>
             <AnimatePresence mode="wait">
               <Routes location={location} key={location.pathname}>
+                {/* Public Routes */}
                 <Route path="/" element={<Home />} />
                 <Route path="/wings" element={<Wings />} />
                 <Route path="/innovation" element={<Innovation />} />
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/company" element={<Company />} />
                 <Route path="/contact" element={<Contact />} />
-                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/login" element={<Login />} />
+
+                {/* Protected Routes */}
+                <Route path="/dashboard" element={
+                  <ProtectedRoute requireAdmin>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
               </Routes>
             </AnimatePresence>
           </React.Suspense>
         </main>
-        {!isDashboard && <Footer />}
+        {!isDashboard && !isLogin && <Footer />}
       </div>
     </SystemStatusWrapper>
   );
 };
 
-
-
 function App() {
   return (
     <HashRouter>
       <ThemeProvider>
-        <ContentProvider>
-          <ContentWrapper />
-        </ContentProvider>
+        <AuthProvider>
+          <ContentProvider>
+            <ContentWrapper />
+          </ContentProvider>
+        </AuthProvider>
       </ThemeProvider>
     </HashRouter>
   );

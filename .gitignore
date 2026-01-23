@@ -1,24 +1,65 @@
+# ============================================================
+# TECHTONIC .GITIGNORE
+# ============================================================
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Environment variables (SENSITIVE!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+Thumbs.db
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
 *.local
+.cache/
+.parcel-cache/
+.turbo/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Vercel
+.vercel/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional: Database files with sensitive data
+# (Keep schema and seed files, they don't contain secrets)
+# database/*.backup
+# database/*.dump
+
+# ============================================================
+# IMPORTANT: The .env file contains your DATABASE_URL and
+# JWT_SECRET. NEVER commit this file to git!
+# ============================================================
