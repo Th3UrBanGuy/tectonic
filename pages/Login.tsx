@@ -163,7 +163,10 @@ const Login: React.FC = () => {
                                     <input
                                         type="email"
                                         value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
+                                        onChange={(e) => {
+                                            setEmail(e.target.value);
+                                            setError('');
+                                        }}
                                         className="w-full bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] hover:border-brand-500/30 dark:hover:border-white/[0.12] focus:border-brand-500/50 rounded-xl pl-12 pr-4 py-4 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-4 focus:ring-brand-500/10 dark:focus:ring-brand-500/30 transition-all duration-300"
                                         placeholder="admin@tectonic.com"
                                         required
@@ -186,7 +189,10 @@ const Login: React.FC = () => {
                                     <input
                                         type="password"
                                         value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
+                                        onChange={(e) => {
+                                            setPassword(e.target.value);
+                                            setError('');
+                                        }}
                                         className="w-full bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] hover:border-brand-500/30 dark:hover:border-white/[0.12] focus:border-brand-500/50 rounded-xl pl-12 pr-4 py-4 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-4 focus:ring-brand-500/10 dark:focus:ring-brand-500/30 transition-all duration-300"
                                         placeholder="Enter your password"
                                         required
