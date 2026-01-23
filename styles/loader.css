@@ -1,0 +1,85 @@
+/* Animated Logo Loader Styles */
+.logo-loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px;
+    background-color: #ffffff;
+    min-height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    transition: background-color 0.3s ease;
+}
+
+/* Dark mode background */
+html.dark .logo-loader-container {
+    background-color: #0a0a0a;
+}
+
+.logo-pill-container {
+    background-color: #000000;
+    border-radius: 100px;
+    padding: 14px 0px;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    will-change: width, transform, box-shadow;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Dark mode pill - white border with dark background */
+html.dark .logo-pill-container {
+    background-color: #0a0a0a;
+    border: 2px solid #ffffff;
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+}
+
+.logo-text-overflow {
+    overflow: hidden;
+    padding: 0 40px;
+}
+
+.logo-main-text {
+    color: #FFFFFF;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 42px;
+    margin: 0;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    line-height: 1;
+    transition: color 0.3s ease;
+}
+
+/* Dark mode text - dark text on white border */
+html.dark .logo-main-text {
+    color: #ffffff;
+}
+
+.logo-subtext-container {
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.logo-subtext {
+    color: #000000;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+/* Dark mode subtext */
+html.dark .logo-subtext {
+    color: #ffffff;
+}

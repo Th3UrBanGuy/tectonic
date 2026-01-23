@@ -1,0 +1,47 @@
+@import "tailwindcss";
+@import './styles/buttons/gradient-button.css';
+@import './styles/buttons/cyberpunk-button.css';
+@import './styles/loader.css';
+@import './styles/tectonic-logo.css';
+
+@theme {
+  /* Brand Colors */
+  --color-brand-50: #f0fdfa;
+  --color-brand-100: #ccfbf1;
+  --color-brand-200: #99f6e4;
+  --color-brand-300: #5eead4;
+  --color-brand-400: #2dd4bf;
+  --color-brand-500: #14b8a6;
+  --color-brand-600: #0d9488;
+  --color-brand-700: #0f766e;
+  --color-brand-800: #115e59;
+  --color-brand-900: #134e4a;
+
+  /* Dark Background */
+  --color-dark-bg: #0a0a0a;
+}
+
+/* Contact Top Bar animated border */
+.contact-top-bar {
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  animation: borderColorChange 8s linear infinite;
+}
+
+@keyframes borderColorChange {
+  0% {
+    border-color: var(--color-brand-500);
+  }
+
+  33% {
+    border-color: #8b5cf6;
+  }
+
+  66% {
+    border-color: #f43f5e;
+  }
+
+  100% {
+    border-color: var(--color-brand-500);
+  }
+}

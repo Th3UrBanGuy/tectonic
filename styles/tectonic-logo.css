@@ -1,0 +1,94 @@
+/* Tectonic Logo Component Styles */
+.tectonic-logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.tectonic-pill {
+    background-color: #000000;
+    border: 2px solid #000000;
+    border-radius: 100px;
+    padding: 4px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+/* Dark mode - white pill with white border, black text */
+html.dark .tectonic-pill {
+    background-color: #ffffff;
+    border: 2px solid #ffffff;
+}
+
+/* Light mode - black pill with black border, white text */
+html:not(.dark) .tectonic-pill {
+    background-color: #000000;
+    border: 2px solid #000000;
+}
+
+.tectonic-main-text {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    margin: 0;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    line-height: 1;
+    transition: color 0.3s ease;
+    color: #FFFFFF;
+}
+
+/* Dark mode text - black on white pill */
+html.dark .tectonic-main-text {
+    color: #000000;
+}
+
+/* Light mode text - white on black pill */
+html:not(.dark) .tectonic-main-text {
+    color: #FFFFFF;
+}
+
+.tectonic-subtext-container {
+    margin-top: 2px;
+}
+
+.tectonic-subtext {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 6px;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: color 0.3s ease;
+}
+
+/* Dark mode subtext - white */
+html.dark .tectonic-subtext {
+    color: #ffffff;
+}
+
+/* Light mode subtext - black */
+html:not(.dark) .tectonic-subtext {
+    color: #000000;
+}
+
+/* Footer specific sizing - slightly larger */
+footer .tectonic-pill {
+    padding: 8px 28px;
+}
+
+footer .tectonic-main-text {
+    font-size: 20px;
+    letter-spacing: 2.5px;
+}
+
+footer .tectonic-subtext {
+    font-size: 9px;
+}
+
+footer .tectonic-subtext-container {
+    margin-top: 6px;
+}

@@ -1,0 +1,57 @@
+/* Animated Logo for Navbar */
+.animated-logo-wrapper {
+    display: inline-block;
+}
+
+.logo-pill-nav {
+    background-color: #000000;
+    border-radius: 50px;
+    padding: 6px 0px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    will-change: width;
+    transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+/* Dark mode - white border, dark background */
+html.dark .logo-pill-nav {
+    background-color: transparent;
+    border: 2px solid #ffffff;
+}
+
+/* Light mode - black background, no border */
+html:not(.dark) .logo-pill-nav {
+    background-color: #000000;
+    border: 2px solid #000000;
+}
+
+.logo-text-overflow-nav {
+    overflow: hidden;
+    padding: 0 20px;
+}
+
+.logo-main-text-nav {
+    color: #FFFFFF;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    margin: 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    line-height: 1;
+    white-space: nowrap;
+    transition: color 0.3s ease;
+}
+
+/* Dark mode text - white */
+html.dark .logo-main-text-nav {
+    color: #ffffff;
+}
+
+/* Light mode text - white */
+html:not(.dark) .logo-main-text-nav {
+    color: #ffffff;
+}
