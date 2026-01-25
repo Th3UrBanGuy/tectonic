@@ -45,16 +45,18 @@ async function deploy() {
         console.log('🔍 Step 3: Verifying...');
 
         const userCount = await client.query('SELECT COUNT(*) FROM users');
-        const contentCount = await client.query('SELECT COUNT(*) FROM app_content');
-        const configCount = await client.query('SELECT COUNT(*) FROM app_config');
+        const wingsCount = await client.query('SELECT COUNT(*) FROM wings');
+        const projectsCount = await client.query('SELECT COUNT(*) FROM projects');
+        const settingsCount = await client.query('SELECT COUNT(*) FROM site_settings');
 
         console.log('');
         console.log('┌────────────────────────────────────────────────────┐');
         console.log('│  DATABASE STATISTICS                               │');
         console.log('├────────────────────────────────────────────────────┤');
         console.log(`│  Users:        ${userCount.rows[0].count.padStart(3)}                               │`);
-        console.log(`│  Content:      ${contentCount.rows[0].count.padStart(3)}                               │`);
-        console.log(`│  Config:       ${configCount.rows[0].count.padStart(3)}                               │`);
+        console.log(`│  Wings:        ${wingsCount.rows[0].count.padStart(3)}                               │`);
+        console.log(`│  Projects:     ${projectsCount.rows[0].count.padStart(3)}                               │`);
+        console.log(`│  Settings:     ${settingsCount.rows[0].count.padStart(3)}                               │`);
         console.log('└────────────────────────────────────────────────────┘');
         console.log('');
         console.log('┌────────────────────────────────────────────────────┐');

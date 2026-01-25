@@ -34,6 +34,11 @@ interface ContentContextType {
     setRoadmap: (items: RoadmapItem[]) => void;
 
     // --- Page Specific Content Objects ---
+    pages: any[];
+    setPages: (pages: any[]) => void;
+    menus: Record<string, any[]>;
+    setMenus: (menus: Record<string, any[]>) => void;
+
     homeContent: any;
     setHomeContent: (content: any) => void;
     companyContent: any;
@@ -79,10 +84,16 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const [techStack, setTechStackState] = useState<TechStackItem[]>([]);
     const [roadmap, setRoadmapState] = useState<RoadmapItem[]>([]);
 
+    // V2 New State
+    const [pages, setPagesState] = useState<any[]>([]);
+    const [menus, setMenusState] = useState<Record<string, any[]>>({});
+
     const [homeContent, setHomeContentState] = useState<any>({});
     const [companyContent, setCompanyContentState] = useState<any>({});
     const [portfolioContent, setPortfolioContentState] = useState<any>({});
     const [innovationContent, setInnovationContentState] = useState<any>({});
+
+    // ... (settings state logic remains same)
 
     const [siteSettings, setSiteSettingsState] = useState<configStorage.SiteSettings>({
         siteName: 'Techtonic',
@@ -104,51 +115,51 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setIsLoading(true);
         setError(null);
         try {
-            const [
-                wingsData,
-                teamData,
-                timelineData,
-                partnershipsData,
-                projectsData,
-                techStackData,
-                roadmapData,
-                homeData,
-                companyData,
-                portfolioData,
-                innovationData
-            ] = await Promise.all([
-                contentStorage.fetchWings(),
-                contentStorage.fetchTeam(),
-                contentStorage.fetchTimeline(),
-                contentStorage.fetchPartnerships(),
-                contentStorage.fetchProjects(),
-                contentStorage.fetchTechStack(),
-                contentStorage.fetchRoadmap(),
-                contentStorage.fetchHomeContent(),
-                contentStorage.fetchCompanyContent(),
-                contentStorage.fetchPortfolioContent(),
-                contentStorage.fetchInnovationContent()
-            ]);
+            // Note: contentStorage.fetchWings etc call individual endpoints.
+            // But we actually have an aggregate endpoint /api/content (GET).
+            // Usually we might want to use that for single request efficiency.
+            // For now, let's assume contentStorage acts as a proxy or we keep this pattern.
+            // Wait, the previous implementation used Promise.all on individual fetches.
+            // BUT, my `api/content/index.js` handles the aggregate. 
+            // If I look at `components/ContentContext.tsx` line 107+, it imports fetches.
+            // `services/contentStorage.ts` fetch functions hit `/api/content/${type}`.
+            // So we need to add fetchMenus and fetchPages to contentStorage first? 
+            // OR simpler: Just hit the aggregate endpoint here and distribute! 
+            // The previous code hitting individual endpoints is chatty. 
+            // Let's switch to calling the aggregate endpoint we built!
 
-            setWingsState(wingsData);
-            setTeamState(teamData);
-            setTimelineState(timelineData);
-            setPartnershipsState(partnershipsData);
-            setProjectsState(projectsData);
-            setTechStackState(techStackData);
-            setRoadmapState(roadmapData);
+            const response = await fetch('/api/content');
+            const { content, config } = await response.json();
 
-            setHomeContentState(homeData);
-            setCompanyContentState(companyData);
-            setPortfolioContentState(portfolioData);
-            setInnovationContentState(innovationData);
+            setWingsState(content.wings || []);
+            setTeamState(content.team || []);
+            setTimelineState(content.timeline || []);
+            setPartnershipsState(content.partnerships || []);
+            setProjectsState(content.projects || []);
+            setTechStackState(content.techStack || []);
+            setRoadmapState(content.roadmap || []);
 
-            // Config is still local for now or separately managed? 
-            // The API endpoints for config exist in index.js but contentStorage doesn't wrap them yet.
-            // Keeping config local/legacy for this step as prompt focused on "content".
-            // TODO: Move config to DB as well.
-            setSiteSettingsState(configStorage.getSiteSettings());
-            setContactConfigState(configStorage.getContactConfig());
+            setPagesState(content.pages || []);
+            setMenusState(content.menus || {});
+
+            setHomeContentState(content.homeContent || {});
+            setCompanyContentState(content.companyContent || {});
+            setPortfolioContentState(content.portfolioContent || {});
+            setInnovationContentState(content.innovationContent || {});
+
+            if (config) {
+                setSiteSettingsState({
+                    siteName: config.site_name || config.siteName,
+                    siteTagline: config.site_tagline || config.siteTagline,
+                    maintenanceMode: config.maintenanceMode === 'true' || config.maintenanceMode === true,
+                    allowRegistration: config.allowRegistration === 'true' || config.allowRegistration === true,
+                });
+                setContactConfigState({
+                    address: config.address,
+                    contact: config.contact,
+                    socials: config.socials
+                });
+            }
 
         } catch (error) {
             console.error("CRITICAL: Failed to load content from API.", error);
@@ -157,6 +168,12 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
             setIsLoading(false);
         }
     }, []);
+
+    // ... wrapped setters need to act on state ...
+    const setPages = (p: any[]) => setPagesState(p); // TODO: Add persistence
+    const setMenus = (m: Record<string, any[]>) => setMenusState(m); // TODO: Add persistence
+
+    // ... existing setters ...
 
     // Initial Data Load
     useEffect(() => {
@@ -240,6 +257,8 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
             projects, setProjects,
             techStack, setTechStack,
             roadmap, setRoadmap,
+            pages, setPages,
+            menus, setMenus,
             homeContent, setHomeContent,
             companyContent, setCompanyContent,
             portfolioContent, setPortfolioContent,

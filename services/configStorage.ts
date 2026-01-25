@@ -1,6 +1,6 @@
 import { CONTACT_INFO } from '../data/pages/contact';
 
-// Types (Mirrored from constants structure for now, can be moved to types.ts)
+// Types
 export interface SiteSettings {
     siteName: string;
     siteTagline: string;
@@ -18,17 +18,10 @@ export interface ContactConfig {
         email: string;
         phone: string;
     };
-    socials: {
-        linkedin: string;
-        facebook: string;
-        instagram: string;
-        twitter: string;
-        github: string;
-    };
+    socials: Record<string, string>; // Changed to dynamic record
 }
 
-const SITE_SETTINGS_KEY = 'techtonic_site_settings';
-const CONTACT_CONFIG_KEY = 'techtonic_contact_config';
+const API_URL = '/api/content/settings';
 
 const DEFAULT_SITE_SETTINGS: SiteSettings = {
     siteName: 'Techtonic',
@@ -37,46 +30,43 @@ const DEFAULT_SITE_SETTINGS: SiteSettings = {
     allowRegistration: false,
 };
 
+// GETters - These are still synchronous in the Context usage pattern (initial state), 
+// but the Context `refreshContent` actually populates the state from API now. 
+// So these getters might just be fallback defaults or legacy local reads.
+// We'll keep them returning defaults for safety, but the app relies on Context.refreshContent()
 export const getSiteSettings = (): SiteSettings => {
-    try {
-        const data = localStorage.getItem(SITE_SETTINGS_KEY);
-        if (!data) return DEFAULT_SITE_SETTINGS;
-
-        const parsed = JSON.parse(data);
-        return {
-            ...DEFAULT_SITE_SETTINGS,
-            ...parsed
-        };
-    } catch (e) {
-        console.error('Error loading site settings', e);
-        return DEFAULT_SITE_SETTINGS;
-    }
+    return DEFAULT_SITE_SETTINGS;
 };
 
 export const getContactConfig = (): ContactConfig => {
-    try {
-        const data = localStorage.getItem(CONTACT_CONFIG_KEY);
-        if (!data) return CONTACT_INFO;
+    return CONTACT_INFO;
+};
 
-        const parsed = JSON.parse(data);
-        // Deep merge with defaults to ensure all fields exist
-        return {
-            ...CONTACT_INFO,
-            ...parsed,
-            address: { ...CONTACT_INFO.address, ...parsed.address },
-            contact: { ...CONTACT_INFO.contact, ...parsed.contact },
-            socials: { ...CONTACT_INFO.socials, ...parsed.socials },
-        };
+// SETters - Now Async calling API
+export const saveContactConfig = async (config: ContactConfig) => {
+    try {
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: config })
+            // The API expects 'data' root. 
+            // The API logic maps data.address/contact/socials.
+            // config object matches that structure directly.
+        });
     } catch (e) {
-        console.error('Error loading contact config', e);
-        return CONTACT_INFO;
+        console.error('Error saving contact config to API', e);
     }
 };
 
-export const saveContactConfig = (config: ContactConfig) => {
-    localStorage.setItem(CONTACT_CONFIG_KEY, JSON.stringify(config));
-};
-
-export const saveSiteSettings = (settings: SiteSettings) => {
-    localStorage.setItem(SITE_SETTINGS_KEY, JSON.stringify(settings));
+export const saveSiteSettings = async (settings: SiteSettings) => {
+    try {
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: settings })
+            // settings has siteName, siteTagline which matches API expectation
+        });
+    } catch (e) {
+        console.error('Error saving site settings to API', e);
+    }
 };
