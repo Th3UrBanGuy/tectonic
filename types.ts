@@ -29,6 +29,13 @@ export interface Project {
   solution: string;
   impact: string;
   image: string;
+  techStack?: string[];
+  links?: {
+    live?: string;
+    github?: string;
+    docs?: string;
+  };
+  createdAt?: string;
 }
 
 export interface TeamMember {
@@ -37,7 +44,7 @@ export interface TeamMember {
   role: string;
   bio: string;
   image: string;
-  linkedin: string;
+  website: string;
 }
 
 export interface Milestone {
@@ -139,14 +146,4 @@ export interface RoadmapItem {
   order: number;
 }
 
-export interface ProjectItem {
-  id: string;
-  title: string;
-  category: 'Software' | 'Security' | 'Robotics' | 'Consultancy';
-  client: string;
-  challenge: string;
-  solution: string;
-  impact: string;
-  image: string; // URL or base64
-  createdAt: string;
-}
+export type ProjectItem = Project;

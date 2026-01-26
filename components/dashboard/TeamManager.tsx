@@ -138,7 +138,7 @@ const TeamMemberForm: React.FC<{
         role: member?.role || '',
         image: member?.image || '',
         bio: member?.bio || '',
-        socials: member?.socials || { linkedin: '', twitter: '', github: '' }
+        website: member?.website || ''
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -187,6 +187,15 @@ const TeamMemberForm: React.FC<{
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                     className="w-full px-4 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 outline-none transition-all"
                     rows={4}
+                />
+            </div>
+            <div>
+                <label className="block text-sm text-slate-600 dark:text-slate-400 mb-1">Website URL</label>
+                <input
+                    type="text"
+                    value={formData.website}
+                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                    className="w-full px-4 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 outline-none transition-all"
                 />
             </div>
 

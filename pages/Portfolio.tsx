@@ -9,11 +9,12 @@ import { PORTFOLIO_CONTENT } from '../data/pages/portfolio';
 const Portfolio = () => {
   const [filter, setFilter] = useState<string>('All');
   const [projects, setProjects] = useState<ProjectItem[]>([]);
-  const filters = PORTFOLIO_CONTENT.filters;
 
   useEffect(() => {
     setProjects(getProjects());
   }, []);
+
+  const filters = ['All', ...Array.from(new Set(projects.map(p => p.category)))];
 
   const filteredProjects = filter === 'All'
     ? projects
@@ -82,7 +83,7 @@ const Portfolio = () => {
         </motion.div>
 
         {/* Projects Grid with AnimatePresence */}
-        <motion.div layout className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((project, index) => (
               <motion.div

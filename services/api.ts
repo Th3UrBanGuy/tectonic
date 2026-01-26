@@ -1,10 +1,17 @@
 /**
  * API Service Layer for Techtonic
- * Handles all communication with Vercel Functions
+ * Handles all communication with Local Data
  */
 
-// Base API URL - empty for same-origin requests in production
-const API_BASE = '';
+import { WINGS } from '../data/wings';
+import { TEAM } from '../data/team';
+import { TIMELINE } from '../data/timeline';
+import { PARTNERSHIPS } from '../data/partnerships';
+import { PROJECTS } from '../data/projects';
+import { HOME_CONTENT } from '../data/pages/home';
+import { COMPANY_CONTENT, COMPANY_ACHIEVEMENTS } from '../data/pages/company';
+import { INNOVATION_CONTENT, INNOVATION_TECH_STACK, INNOVATION_ROADMAP } from '../data/pages/innovation';
+import { CONTACT_INFO } from '../data/pages/contact';
 
 // Content types that can be fetched/saved
 export type ContentType =
@@ -13,29 +20,6 @@ export type ContentType =
 
 // Config keys
 export type ConfigKey = 'siteSettings' | 'contactConfig';
-
-/**
- * Helper function for API requests
- */
-async function apiRequest<T>(
-    endpoint: string,
-    options: RequestInit = {}
-): Promise<T> {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers,
-        },
-        ...options,
-    });
-
-    if (!response.ok) {
-        const error = await response.json().catch(() => ({ error: 'Request failed' }));
-        throw new Error(error.error || `HTTP ${response.status}`);
-    }
-
-    return response.json();
-}
 
 // ============================================================
 // CONTENT API
@@ -46,7 +30,21 @@ async function apiRequest<T>(
  */
 export async function getContent<T>(type: ContentType): Promise<T | null> {
     try {
-        return await apiRequest<T>(`/api/content/${type}`);
+        switch (type) {
+            case 'wings': return WINGS as unknown as T;
+            case 'team': return TEAM as unknown as T;
+            case 'timeline': return TIMELINE as unknown as T;
+            case 'partnerships': return PARTNERSHIPS as unknown as T;
+            case 'projects': return PROJECTS as unknown as T;
+            case 'techStack': return INNOVATION_TECH_STACK as unknown as T;
+            case 'roadmap': return INNOVATION_ROADMAP as unknown as T;
+            case 'homeContent': return HOME_CONTENT as unknown as T;
+            case 'companyContent': return { ...COMPANY_CONTENT, achievements: COMPANY_ACHIEVEMENTS } as unknown as T;
+            case 'innovationContent': return INNOVATION_CONTENT as unknown as T;
+            default:
+                console.warn(`Unknown content type: ${type}`);
+                return null;
+        }
     } catch (error) {
         console.error(`Failed to fetch ${type}:`, error);
         return null;
@@ -57,16 +55,8 @@ export async function getContent<T>(type: ContentType): Promise<T | null> {
  * Save content by type
  */
 export async function saveContent<T>(type: ContentType, data: T): Promise<boolean> {
-    try {
-        await apiRequest(`/api/content/${type}`, {
-            method: 'POST',
-            body: JSON.stringify({ data }),
-        });
-        return true;
-    } catch (error) {
-        console.error(`Failed to save ${type}:`, error);
-        return false;
-    }
+    console.warn('saveContent is not supported in static mode');
+    return true;
 }
 
 /**
@@ -77,7 +67,24 @@ export async function getAllContent(): Promise<{
     config: Record<string, any>;
 } | null> {
     try {
-        return await apiRequest('/api/content');
+        return {
+            content: {
+                wings: WINGS,
+                team: TEAM,
+                timeline: TIMELINE,
+                partnerships: PARTNERSHIPS,
+                projects: PROJECTS,
+                techStack: INNOVATION_TECH_STACK,
+                roadmap: INNOVATION_ROADMAP,
+                homeContent: HOME_CONTENT,
+                companyContent: { ...COMPANY_CONTENT, achievements: COMPANY_ACHIEVEMENTS },
+                innovationContent: INNOVATION_CONTENT,
+            },
+            config: {
+                contactConfig: CONTACT_INFO,
+                siteSettings: {}
+            }
+        };
     } catch (error) {
         console.error('Failed to fetch all content:', error);
         return null;
@@ -93,7 +100,11 @@ export async function getAllContent(): Promise<{
  */
 export async function getConfig<T>(key: ConfigKey): Promise<T | null> {
     try {
-        return await apiRequest<T>(`/api/config/${key}`);
+        switch (key) {
+            case 'contactConfig': return CONTACT_INFO as unknown as T;
+            case 'siteSettings': return {} as unknown as T;
+            default: return null;
+        }
     } catch (error) {
         console.error(`Failed to fetch config ${key}:`, error);
         return null;
@@ -104,16 +115,8 @@ export async function getConfig<T>(key: ConfigKey): Promise<T | null> {
  * Save config by key
  */
 export async function saveConfig<T>(key: ConfigKey, value: T): Promise<boolean> {
-    try {
-        await apiRequest(`/api/config/${key}`, {
-            method: 'POST',
-            body: JSON.stringify({ value }),
-        });
-        return true;
-    } catch (error) {
-        console.error(`Failed to save config ${key}:`, error);
-        return false;
-    }
+    console.warn('saveConfig is not supported in static mode');
+    return true;
 }
 
 // ============================================================
@@ -131,16 +134,8 @@ export interface User {
  * Admin login
  */
 export async function login(email: string, password: string): Promise<User | null> {
-    try {
-        const result = await apiRequest<{ success: boolean; user: User }>('/api/auth/login', {
-            method: 'POST',
-            body: JSON.stringify({ email, password }),
-        });
-        return result.user;
-    } catch (error) {
-        console.error('Login failed:', error);
-        return null;
-    }
+    console.warn('Login is not supported in static mode');
+    return null;
 }
 
 // ============================================================
@@ -163,3 +158,4 @@ export const api = {
 };
 
 export default api;
+

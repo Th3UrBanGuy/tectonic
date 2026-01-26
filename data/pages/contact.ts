@@ -1,18 +1,14 @@
 export const CONTACT_INFO = {
   address: {
-    street: "Chattogram, Bangladesh",
-    sector: "Dhaka, Bangladesh",
-    coordinates: "Lat: 23.8103, Long: 90.4125"
+    street: "Chattogram",
+    sector: "Bangladesh",
+    coordinates: "Lat: 22.3569° N, 91.7832° E"
   },
   contact: {
-    email: "support@techt0nic.com",
-    phone: "+880 171-1234567"
+    email: "support@tect0nic.com",
+    phone: "+880 1624124830"
   },
   socials: {
-    linkedin: "https://linkedin.com/company/techtonic",
     facebook: "https://facebook.com/techtonic.official",
-    instagram: "https://instagram.com/techtonic",
-    twitter: "https://twitter.com/techtonic",
-    github: "https://github.com/techtonic"
   }
 };

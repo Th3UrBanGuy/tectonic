@@ -10,9 +10,10 @@ import { AuthProvider } from './components/AuthContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import SystemStatusWrapper from './components/SystemStatusWrapper';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import PageSkeleton from './components/ui/PageSkeleton';
 import ContactTopBar from './components/layout/ContactTopBar';
+import ScrollToTop from './components/ScrollToTop';
 
 // Auth
 import ProtectedRoute from './components/ProtectedRoute';
@@ -20,8 +21,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 // Pages (Lazy Loaded)
 const Home = React.lazy(() => import('./pages/Home'));
 const Wings = React.lazy(() => import('./pages/Wings'));
-const Innovation = React.lazy(() => import('./pages/Innovation'));
+// const Innovation = React.lazy(() => import('./pages/Innovation'));
 const Portfolio = React.lazy(() => import('./pages/Portfolio'));
+const ProjectDetail = React.lazy(() => import('./pages/ProjectDetail'));
 const Company = React.lazy(() => import('./pages/Company'));
 const Contact = React.lazy(() => import('./pages/Contact'));
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
@@ -45,23 +47,33 @@ const ContentWrapper = () => {
         <main className={`flex-grow relative z-0 ${isDashboard || isLogin ? 'h-screen' : 'pt-10'}`}>
           <React.Suspense fallback={<PageSkeleton />}>
             <AnimatePresence mode="wait">
-              <Routes location={location} key={location.pathname}>
-                {/* Public Routes */}
-                <Route path="/" element={<Home />} />
-                <Route path="/wings" element={<Wings />} />
-                <Route path="/innovation" element={<Innovation />} />
-                <Route path="/portfolio" element={<Portfolio />} />
-                <Route path="/company" element={<Company />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/login" element={<Login />} />
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full"
+              >
+                <Routes location={location}>
+                  {/* Public Routes */}
+                  <Route path="/" element={<Home />} />
+                  <Route path="/wings" element={<Wings />} />
+                  {/* <Route path="/innovation" element={<Innovation />} /> */}
+                  <Route path="/portfolio" element={<Portfolio />} />
+                  <Route path="/portfolio/:id" element={<ProjectDetail />} />
+                  <Route path="/company" element={<Company />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/login" element={<Login />} />
 
-                {/* Protected Routes */}
-                <Route path="/dashboard" element={
-                  <ProtectedRoute requireAdmin>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-              </Routes>
+                  {/* Protected Routes */}
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute requireAdmin>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } />
+                </Routes>
+              </motion.div>
             </AnimatePresence>
           </React.Suspense>
         </main>
@@ -74,6 +86,7 @@ const ContentWrapper = () => {
 function App() {
   return (
     <HashRouter>
+      <ScrollToTop />
       <ThemeProvider>
         <AuthProvider>
           <ContentProvider>

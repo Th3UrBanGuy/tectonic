@@ -63,10 +63,12 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, className = '' }) =
               </div>
             </div>
 
+            {/* 
             <Link to="/innovation" className="text-[11px] font-mono font-bold tracking-widest text-slate-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-white transition-colors relative group">
               INNOVATION
               <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-brand-500 group-hover:w-full transition-all duration-300 shadow-[0_0_8px_rgba(20,184,166,0.8)]"></span>
             </Link>
+            */}
             <Link to="/portfolio" className="text-[11px] font-mono font-bold tracking-widest text-slate-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-white transition-colors relative group">
               PORTFOLIO
               <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-brand-500 group-hover:w-full transition-all duration-300 shadow-[0_0_8px_rgba(20,184,166,0.8)]"></span>
@@ -103,17 +105,17 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, className = '' }) =
           <div className="h-4 w-[1px] bg-slate-300 dark:bg-white/10"></div>
 
           {/* Client Login - Profile Icon */}
-          <Link
+          {/*<Link
             to="/dashboard"
             className="w-8 h-8 rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-700 flex items-center justify-center text-slate-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-white hover:border-brand-500 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-all duration-300 shadow-lg shadow-slate-200 dark:shadow-black/50 group"
             title="Client Access Portal"
           >
             <User size={16} className="group-hover:scale-110 transition-transform" />
-          </Link>
+          </Link> */}
 
           <Link to="/contact" className="relative group overflow-hidden px-6 py-2 bg-brand-600/10 border border-brand-500/50 hover:bg-brand-600 hover:border-brand-500 transition-all duration-300 rounded-sm">
             <div className="relative flex items-center gap-2 text-brand-700 dark:text-brand-400 group-hover:text-white font-mono text-[10px] font-bold tracking-[0.2em] uppercase">
-              <span>Initialize</span>
+              <span>Contact Us</span>
             </div>
             {/* Tech Corners */}
             <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-brand-500"></div>
@@ -141,13 +143,13 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, className = '' }) =
             exit={{ opacity: 0, height: 0 }}
             className="lg:hidden fixed inset-0 bg-white/95 dark:bg-black/95 backdrop-blur-xl z-10 pt-24 px-6"
           >
-            <div className="flex flex-col space-y-6">
+            <div className="flex flex-col space-y-6 pt-8">
               <Link to="/" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">HOME</Link>
               <Link to="/wings" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">WINGS</Link>
-              <Link to="/innovation" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">INNOVATION</Link>
+              {/* <Link to="/innovation" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">INNOVATION</Link> */}
               <Link to="/portfolio" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">PORTFOLIO</Link>
               <Link to="/company" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">COMPANY</Link>
-              <Link to="/dashboard" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4 flex items-center gap-2"><User size={20} /> CLIENT ACCESS</Link>
+              {/* <Link to="/dashboard" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4 flex items-center gap-2"><User size={20} /> CLIENT ACCESS</Link> */}
 
               <Link to="/contact" onClick={() => setIsOpen(false)} className="mt-8 flex items-center justify-between text-brand-700 dark:text-brand-400 font-mono uppercase tracking-widest border border-brand-500/30 p-4 bg-brand-50 dark:bg-brand-900/10 rounded">
                 <span>Contact Protocol</span>

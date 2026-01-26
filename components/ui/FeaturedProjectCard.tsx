@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '../../lib/utils';
+import { Globe, ArrowRight } from 'lucide-react';
 
 interface ProjectCardProps {
     project: {
@@ -17,6 +19,7 @@ interface ProjectCardProps {
 }
 
 const FeaturedProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
+    const navigate = useNavigate();
     const getCategoryColor = (category: string) => {
         switch (category) {
             case 'Software':
@@ -36,15 +39,16 @@ const FeaturedProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => 
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.15 }}
+            onClick={() => navigate(`/portfolio/${project.id}`)}
             className="group relative"
         >
             {/* Animated gradient border effect */}
             <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-orange-500 rounded-3xl opacity-0 group-hover:opacity-100 blur transition-all duration-500 group-hover:duration-200 animate-pulse"></div>
 
             {/* Main card */}
-            <div className="relative h-full rounded-3xl border border-slate-200/60 dark:border-gray-700/50 bg-white dark:bg-gray-900 overflow-hidden">
+            <div className="relative h-full rounded-3xl border border-slate-200/60 dark:border-gray-700/50 bg-white dark:bg-gray-900 overflow-hidden cursor-pointer group-hover:shadow-2xl transition-all duration-500">
                 {/* Image section with parallax effect */}
-                <div className="relative h-72 overflow-hidden">
+                <div className="relative h-40 overflow-hidden">
                     <motion.img
                         whileHover={{ scale: 1.1 }}
                         transition={{ duration: 0.6 }}
@@ -77,7 +81,7 @@ const FeaturedProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => 
                             initial={{ y: 20, opacity: 0 }}
                             whileInView={{ y: 0, opacity: 1 }}
                             transition={{ delay: index * 0.15 + 0.3 }}
-                            className="text-3xl font-bold text-white mb-2"
+                            className="text-2xl font-bold text-white mb-2"
                         >
                             {project.title}
                         </motion.h3>
@@ -93,7 +97,7 @@ const FeaturedProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => 
                 </div>
 
                 {/* Content section with staggered reveal */}
-                <div className="p-6 space-y-5">
+                <div className="p-5 space-y-4">
                     {/* Challenge */}
                     <motion.div
                         initial={{ x: -20, opacity: 0 }}
@@ -152,7 +156,7 @@ const FeaturedProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => 
                 {/* Bottom accent line */}
                 <div className="h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
-        </motion.div>
+        </motion.div >
     );
 };
 

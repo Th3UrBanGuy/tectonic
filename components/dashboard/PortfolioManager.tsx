@@ -37,7 +37,7 @@ const PortfolioManager: React.FC = () => {
         ? projects
         : projects.filter(p => p.category === filter);
 
-    const categories = ['All', 'Software', 'Security', 'Robotics', 'Consultancy'];
+    const categories = ['All', 'Software', 'Productivity'];
 
     return (
         <div className="space-y-6">

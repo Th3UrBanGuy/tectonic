@@ -9,9 +9,9 @@ export const COMPANY_CONTENT = {
   },
   stats: [
     { label: "Founded", value: "2025" },
-    { label: "Global Offices", value: "5" },
-    { label: "Engineers", value: "12+" },
-    { label: "Patents", value: "15" }
+    { label: "Wings", value: "2" },
+    { label: "Projects", value: "12+" },
+    { label: "Members", value: "4" }
   ],
   mission: {
     title: "OUR MISSION",
@@ -33,31 +33,10 @@ export const COMPANY_CONTENT = {
 
 export const COMPANY_ACHIEVEMENTS = [
   {
-    title: "ISO 27001 Certified",
-    issuer: "International Standards Organization",
-    year: "2023",
+    title: "IIUC NextGen Hackathon (16th place)",
+    issuer: "Programming Hero",
+    year: "2025",
     color: "text-emerald-500 dark:text-emerald-400",
     border: "hover:border-emerald-500/50"
-  },
-  {
-    title: "Top 50 Innovators",
-    issuer: "TechCrunch Disrupt",
-    year: "2024",
-    color: "text-yellow-500 dark:text-yellow-400",
-    border: "hover:border-yellow-500/50"
-  },
-  {
-    title: "Carbon Neutral",
-    issuer: "Global Climate Initiative",
-    year: "2022",
-    color: "text-blue-500 dark:text-blue-400",
-    border: "hover:border-blue-500/50"
-  },
-  {
-    title: "Enterprise Security Award",
-    issuer: "CyberDefense Magazine",
-    year: "2023",
-    color: "text-purple-500 dark:text-purple-400",
-    border: "hover:border-purple-500/50"
   }
 ];
