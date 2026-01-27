@@ -3,32 +3,39 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req: any, res: any) {
-    // CORS Headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  // CORS Headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const { name, email, company, phone, department, projectType, budget, message } = req.body;
+
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
+    const fromAddress = 'Tectonic System <system@tect0nic.com>';
+    const supportAddress = 'TechTonic Support <support@tect0nic.com>';
 
-    try {
-        const { name, email, company, phone, department, projectType, budget, message } = req.body;
+    console.log(`[DEBUG] Using API Key: ${process.env.RESEND_API_KEY?.substring(0, 8)}...`);
+    console.log(`[DEBUG] Sending Admin Email FROM: ${fromAddress}`);
+    console.log(`[DEBUG] Sending User Email FROM: ${supportAddress}`);
 
-        if (!name || !email || !message) {
-            return res.status(400).json({ error: 'Missing required fields' });
-        }
-
-        // Parallel Email Sending
-        const adminNotificationRequest = resend.emails.send({
-            from: 'Tectonic System <system@tect0nic.com>',
-            to: ['support@tect0nic.com'],
-            subject: `🚨 New Inquiry: ${name} [${department}]`,
-            html: `
+    // Parallel Email Sending
+    const adminNotificationRequest = resend.emails.send({
+      from: fromAddress,
+      to: ['support@tect0nic.com'],
+      subject: `🚨 New Inquiry: ${name} [${department}]`,
+      html: `
         <div style="font-family: sans-serif; color: #333;">
           <h2 style="color: #6366f1;">New Contact Inquiry Received</h2>
           <p><strong>From:</strong> ${name} (${email})</p>
@@ -45,13 +52,13 @@ export default async function handler(req: any, res: any) {
           <p style="font-size: 12px; color: #64748b;">Sent via Tectonic Website Contact Portal</p>
         </div>
       `,
-        });
+    });
 
-        const userAutoResponseRequest = resend.emails.send({
-            from: 'TechTonic Support <support@tect0nic.com>',
-            to: [email],
-            subject: `We've received your message, ${name}!`,
-            html: `
+    const userAutoResponseRequest = resend.emails.send({
+      from: 'TechTonic Support <support@tect0nic.com>',
+      to: [email],
+      subject: `We've received your message, ${name}!`,
+      html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
           <div style="text-align: center; padding: 30px; background: #0f172a; color: white; border-radius: 12px 12px 0 0;">
             <h1 style="margin: 0;">TechTonic</h1>
@@ -80,31 +87,31 @@ export default async function handler(req: any, res: any) {
           </p>
         </div>
       `,
-        });
+    });
 
-        // Send both in parallel
-        const [adminResponse, userResponse] = await Promise.all([adminNotificationRequest, userAutoResponseRequest]);
+    // Send both in parallel
+    const [adminResponse, userResponse] = await Promise.all([adminNotificationRequest, userAutoResponseRequest]);
 
-        // Check for errors in the critical admin path
-        if (adminResponse.error) {
-            console.error('Admin Email Error:', adminResponse.error);
-            return res.status(500).json({ error: `Admin Email Failed: ${adminResponse.error.message}` });
-        }
-
-        // Log user error if any, but consider success if admin got it
-        if (userResponse.error) {
-            console.warn('User Auto-Response Error:', userResponse.error);
-        }
-
-        return res.status(200).json({
-            success: true,
-            adminEmailId: adminResponse.data?.id,
-            userEmailId: userResponse.data?.id
-        });
-
-
-    } catch (error: any) {
-        console.error('Server Error:', error);
-        return res.status(500).json({ error: error.message || 'Internal Server Error' });
+    // Check for errors in the critical admin path
+    if (adminResponse.error) {
+      console.error('Admin Email Error:', adminResponse.error);
+      return res.status(500).json({ error: `Admin Email Failed: ${adminResponse.error.message}` });
     }
+
+    // Log user error if any, but consider success if admin got it
+    if (userResponse.error) {
+      console.warn('User Auto-Response Error:', userResponse.error);
+    }
+
+    return res.status(200).json({
+      success: true,
+      adminEmailId: adminResponse.data?.id,
+      userEmailId: userResponse.data?.id
+    });
+
+
+  } catch (error: any) {
+    console.error('Server Error:', error);
+    return res.status(500).json({ error: error.message || 'Internal Server Error' });
+  }
 }
