@@ -19,6 +19,10 @@
 
   /* Dark Background */
   --color-dark-bg: #0a0a0a;
+
+  /* Fonts */
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'Orbitron', monospace;
 }
 
 /* Contact Top Bar animated border */

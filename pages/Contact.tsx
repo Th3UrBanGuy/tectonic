@@ -3,7 +3,7 @@ import { CONTACT_INFO } from '../data/pages/contact';
 import { MapPin, Mail, Calendar, CheckCircle, User, Phone, Building, Briefcase, DollarSign, MessageSquare, Linkedin, Facebook, Instagram, Twitter, Github, Globe } from 'lucide-react';
 import Stepper, { Step } from '../components/ui/Stepper';
 
-import { emailService } from '../services/emailService';
+
 
 const Contact = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -32,22 +32,12 @@ const Contact = () => {
     setIsLoading(true);
     setSubmitError(null);
 
-    try {
-      const result = await emailService.sendEmail(formData);
-
-      if (result.error) {
-        setSubmitError(result.error);
-        // alert(`Failed to send message: ${result.error}`); // No alert needed if we show UI error
-      } else {
-        console.log('Email sent successfully:', result);
-        setIsSubmitted(true);
-      }
-    } catch (error) {
-      console.error('Submission error:', error);
-      setSubmitError('An unexpected error occurred. Please try again.');
-    } finally {
+    // Simulate API call
+    setTimeout(() => {
+      console.log('Form submitted (Static Mode):', formData);
+      setIsSubmitted(true);
       setIsLoading(false);
-    }
+    }, 1500);
   };
 
   const socialIcons: { [key: string]: React.ElementType } = {
@@ -141,10 +131,15 @@ const Contact = () => {
                 <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-green-100 dark:bg-green-500/20 rounded-full mb-6">
                   <CheckCircle size={40} className="sm:w-12 sm:h-12 text-green-600 dark:text-green-500" />
                 </div>
-                <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-slate-900 dark:text-white">Message Sent Successfully</h3>
-                <p className="text-base sm:text-lg text-slate-600 dark:text-gray-400 mb-8">
-                  Thank you for reaching out! We will review your project details and get back to you within 24 hours.
-                </p>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-slate-900 dark:text-white">Submission Successful</h3>
+                <div className="bg-yellow-100 dark:bg-yellow-900/30 p-4 rounded-xl mb-8 border border-yellow-200 dark:border-yellow-700">
+                  <p className="text-base sm:text-lg text-yellow-800 dark:text-yellow-200 font-semibold">
+                    🚧 Work in Progress
+                  </p>
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                    The backend email system is currently disabled. Your data has been captured locally (simulation).
+                  </p>
+                </div>
                 <button
                   onClick={() => {
                     setIsSubmitted(false);
