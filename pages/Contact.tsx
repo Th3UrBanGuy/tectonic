@@ -23,6 +23,12 @@ const Contact = () => {
   const { address, contact, socials } = CONTACT_INFO;
 
   const handleFinalSubmit = async () => {
+    // Client-side Validation
+    if (!formData.name || !formData.email || !formData.message) {
+      setSubmitError('Please complete all required fields (Name, Email, Message) before submitting.');
+      return;
+    }
+
     setIsLoading(true);
     setSubmitError(null);
 
@@ -31,14 +37,14 @@ const Contact = () => {
 
       if (result.error) {
         setSubmitError(result.error);
-        alert(`Failed to send message: ${result.error}`); // Simple feedback for now
+        // alert(`Failed to send message: ${result.error}`); // No alert needed if we show UI error
       } else {
         console.log('Email sent successfully:', result);
         setIsSubmitted(true);
       }
     } catch (error) {
       console.error('Submission error:', error);
-      setSubmitError('An unexpected error occurred.');
+      setSubmitError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -167,6 +173,13 @@ const Contact = () => {
                 nextButtonText="Next Step"
                 backButtonText="Back"
               >
+                {/* Global Error Message */}
+                {submitError && (
+                  <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm font-medium flex items-center gap-2 animate-pulse">
+                    <span className="text-lg">⚠️</span> {submitError}
+                  </div>
+                )}
+
                 {/* Step 1: Personal Info */}
                 <Step>
                   <div className="space-y-5">
