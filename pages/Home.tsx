@@ -22,16 +22,14 @@ const Home = () => {
     <>
       <section className="relative h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-[#050505] transition-colors duration-500 pt-24">
         <div className="absolute inset-0 z-0 overflow-hidden">
-          {/* Light mode gradient blobs */}
+          {/* ... overlays ... */}
           <div className="absolute inset-0 dark:hidden">
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-cyan-300/30 to-blue-300/30 rounded-full blur-[100px]"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-300/30 to-pink-300/30 rounded-full blur-[100px]"></div>
-            <div className="absolute top-1/2 right-1/3 w-96 h-96 bg-gradient-to-r from-orange-300/20 to-yellow-300/20 rounded-full blur-[100px]"></div>
+            {/* ... light mode blobs ... */}
           </div>
 
           <div className="hidden dark:block absolute inset-0">
-            <React.Suspense fallback={<div className="w-full h-full bg-[#050505]" />}>
-              <ThreeDBackground key="home-3d-bg" />
+            <React.Suspense fallback={<div className="w-full h-full bg-black/5" />}>
+              <ThreeDBackground />
             </React.Suspense>
           </div>
         </div>
@@ -65,11 +63,9 @@ const Home = () => {
             <CyberpunkButton to="/wings">
               {HOME_CONTENT.hero.buttons.primary} <ArrowRight size={18} style={{ display: 'inline', verticalAlign: 'middle' }} />
             </CyberpunkButton>
-            {/* 
             <GradientButton to="/innovation">
               {HOME_CONTENT.hero.buttons.secondary}
             </GradientButton>
-            */}
           </motion.div>
         </div>
       </section>
@@ -119,7 +115,7 @@ const Home = () => {
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {PROJECTS.slice(0, 3).map((project, index) => (
               <FeaturedProjectCard key={project.id} project={project} index={index} />
             ))}

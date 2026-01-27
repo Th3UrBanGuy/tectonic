@@ -21,11 +21,13 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.0",
     "recharts": "^2.12.7",
+    "resend": "^6.9.1",
     "tailwind-merge": "^2.3.0",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@tabler/icons-react": "^3.36.1",
+    "@types/node": "^25.0.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.0",

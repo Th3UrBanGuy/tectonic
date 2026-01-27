@@ -3,8 +3,12 @@ import { CONTACT_INFO } from '../data/pages/contact';
 import { MapPin, Mail, Calendar, CheckCircle, User, Phone, Building, Briefcase, DollarSign, MessageSquare, Linkedin, Facebook, Instagram, Twitter, Github, Globe } from 'lucide-react';
 import Stepper, { Step } from '../components/ui/Stepper';
 
+import { emailService } from '../services/emailService';
+
 const Contact = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,9 +22,26 @@ const Contact = () => {
 
   const { address, contact, socials } = CONTACT_INFO;
 
-  const handleFinalSubmit = () => {
-    console.log('Form Submitted:', formData);
-    setIsSubmitted(true);
+  const handleFinalSubmit = async () => {
+    setIsLoading(true);
+    setSubmitError(null);
+
+    try {
+      const result = await emailService.sendEmail(formData);
+
+      if (result.error) {
+        setSubmitError(result.error);
+        alert(`Failed to send message: ${result.error}`); // Simple feedback for now
+      } else {
+        console.log('Email sent successfully:', result);
+        setIsSubmitted(true);
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      setSubmitError('An unexpected error occurred.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const socialIcons: { [key: string]: React.ElementType } = {
@@ -114,9 +135,9 @@ const Contact = () => {
                 <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-green-100 dark:bg-green-500/20 rounded-full mb-6">
                   <CheckCircle size={40} className="sm:w-12 sm:h-12 text-green-600 dark:text-green-500" />
                 </div>
-                <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-slate-900 dark:text-white">Transmission Received</h3>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-slate-900 dark:text-white">Message Sent Successfully</h3>
                 <p className="text-base sm:text-lg text-slate-600 dark:text-gray-400 mb-8">
-                  Our team will decrypt your message and respond within 24 hours.
+                  Thank you for reaching out! We will review your project details and get back to you within 24 hours.
                 </p>
                 <button
                   onClick={() => {

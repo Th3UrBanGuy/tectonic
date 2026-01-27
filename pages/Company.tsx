@@ -66,21 +66,20 @@ const MemberCard = ({ member, index }: { member: any; index: number }) => {
                 </p>
 
                 {/* Always Present Action Area */}
-                <div className="mt-auto border-t border-white/5 pt-4">
+                <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-4">
                     <a
                         href={member.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between text-[11px] font-bold text-slate-300 hover:text-white transition-colors group/link"
+                        className="inline-flex items-center gap-2 text-[11px] font-bold text-slate-300 hover:text-white transition-colors group/link"
                     >
-                        <div className="flex items-center gap-2">
-                            <Globe size={14} className="text-brand-500 group-hover/link:rotate-12 transition-transform" />
-                            <span>OFFICIAL WEBSITE</span>
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover/link:bg-brand-500/20 transition-colors">
-                            <ArrowRight size={14} className="text-slate-500 group-hover/link:text-brand-400 -rotate-45 group-hover/link:rotate-0 transition-transform duration-500" />
-                        </div>
+                        <Globe size={14} className="text-brand-500 group-hover/link:rotate-12 transition-transform" />
+                        <span>OFFICIAL WEBSITE</span>
                     </a>
+
+                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-brand-500/20 transition-colors">
+                        <ArrowRight size={14} className="text-slate-500 group-hover:text-brand-400 -rotate-45 group-hover:rotate-0 transition-transform duration-500" />
+                    </div>
                 </div>
             </div>
         </motion.div>

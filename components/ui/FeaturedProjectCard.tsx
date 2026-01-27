@@ -48,7 +48,7 @@ const FeaturedProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => 
             {/* Main card */}
             <div className="relative h-full rounded-3xl border border-slate-200/60 dark:border-gray-700/50 bg-white dark:bg-gray-900 overflow-hidden cursor-pointer group-hover:shadow-2xl transition-all duration-500">
                 {/* Image section with parallax effect */}
-                <div className="relative h-40 overflow-hidden">
+                <div className="relative h-48 overflow-hidden">
                     <motion.img
                         whileHover={{ scale: 1.1 }}
                         transition={{ duration: 0.6 }}
@@ -81,7 +81,7 @@ const FeaturedProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => 
                             initial={{ y: 20, opacity: 0 }}
                             whileInView={{ y: 0, opacity: 1 }}
                             transition={{ delay: index * 0.15 + 0.3 }}
-                            className="text-2xl font-bold text-white mb-2"
+                            className="text-3xl font-bold text-white mb-2"
                         >
                             {project.title}
                         </motion.h3>
@@ -97,7 +97,7 @@ const FeaturedProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => 
                 </div>
 
                 {/* Content section with staggered reveal */}
-                <div className="p-5 space-y-4">
+                <div className="p-6 space-y-5">
                     {/* Challenge */}
                     <motion.div
                         initial={{ x: -20, opacity: 0 }}
@@ -156,7 +156,7 @@ const FeaturedProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => 
                 {/* Bottom accent line */}
                 <div className="h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
-        </motion.div >
+        </motion.div>
     );
 };
 

@@ -9,12 +9,11 @@ import { PORTFOLIO_CONTENT } from '../data/pages/portfolio';
 const Portfolio = () => {
   const [filter, setFilter] = useState<string>('All');
   const [projects, setProjects] = useState<ProjectItem[]>([]);
+  const filters = PORTFOLIO_CONTENT.filters;
 
   useEffect(() => {
     setProjects(getProjects());
   }, []);
-
-  const filters = ['All', ...Array.from(new Set(projects.map(p => p.category)))];
 
   const filteredProjects = filter === 'All'
     ? projects

@@ -21,7 +21,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 // Pages (Lazy Loaded)
 const Home = React.lazy(() => import('./pages/Home'));
 const Wings = React.lazy(() => import('./pages/Wings'));
-// const Innovation = React.lazy(() => import('./pages/Innovation'));
+const Innovation = React.lazy(() => import('./pages/Innovation'));
 const Portfolio = React.lazy(() => import('./pages/Portfolio'));
 const ProjectDetail = React.lazy(() => import('./pages/ProjectDetail'));
 const Company = React.lazy(() => import('./pages/Company'));
@@ -59,7 +59,7 @@ const ContentWrapper = () => {
                   {/* Public Routes */}
                   <Route path="/" element={<Home />} />
                   <Route path="/wings" element={<Wings />} />
-                  {/* <Route path="/innovation" element={<Innovation />} /> */}
+                  <Route path="/innovation" element={<Innovation />} />
                   <Route path="/portfolio" element={<Portfolio />} />
                   <Route path="/portfolio/:id" element={<ProjectDetail />} />
                   <Route path="/company" element={<Company />} />

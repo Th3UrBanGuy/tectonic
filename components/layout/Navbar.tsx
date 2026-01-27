@@ -63,12 +63,10 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, className = '' }) =
               </div>
             </div>
 
-            {/* 
             <Link to="/innovation" className="text-[11px] font-mono font-bold tracking-widest text-slate-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-white transition-colors relative group">
               INNOVATION
               <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-brand-500 group-hover:w-full transition-all duration-300 shadow-[0_0_8px_rgba(20,184,166,0.8)]"></span>
             </Link>
-            */}
             <Link to="/portfolio" className="text-[11px] font-mono font-bold tracking-widest text-slate-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-white transition-colors relative group">
               PORTFOLIO
               <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-brand-500 group-hover:w-full transition-all duration-300 shadow-[0_0_8px_rgba(20,184,166,0.8)]"></span>
@@ -143,7 +141,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, className = '' }) =
             exit={{ opacity: 0, height: 0 }}
             className="lg:hidden fixed inset-0 bg-white/95 dark:bg-black/95 backdrop-blur-xl z-10 pt-24 px-6"
           >
-            <div className="flex flex-col space-y-6 pt-8">
+            <div className="flex flex-col space-y-6">
               <Link to="/" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">HOME</Link>
               <Link to="/wings" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">WINGS</Link>
               {/* <Link to="/innovation" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">INNOVATION</Link> */}
