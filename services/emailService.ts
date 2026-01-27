@@ -27,7 +27,15 @@ export const emailService = {
                 body: JSON.stringify(data),
             });
 
-            const result = await response.json();
+            const text = await response.text();
+            let result;
+            try {
+                result = JSON.parse(text);
+            } catch (e) {
+                // If response is not JSON, it's likely a server error page or plain text error
+                console.error('Non-JSON response received:', text);
+                throw new Error(`Server Error: ${text.substring(0, 100)}${text.length > 100 ? '...' : ''}`);
+            }
 
             if (!response.ok) {
                 throw new Error(result.error || 'Failed to send email');

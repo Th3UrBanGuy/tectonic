@@ -280,18 +280,18 @@ const Contact = () => {
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-2 uppercase tracking-wide">Estimated Budget</label>
                       <div className="relative">
-                        <DollarSign size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm pointer-events-none">৳</span>
                         <select
                           value={formData.budget}
                           onChange={e => setFormData({ ...formData, budget: e.target.value })}
                           className="w-full bg-slate-50 dark:bg-black/50 border-2 border-slate-200 dark:border-gray-700 rounded-xl pl-12 pr-4 py-3 text-slate-900 dark:text-white focus:border-cyan-500 dark:focus:border-cyan-500 focus:outline-none transition-colors appearance-none cursor-pointer"
                         >
                           <option value="">Select budget range</option>
-                          <option>Under $10,000</option>
-                          <option>$10,000 - $50,000</option>
-                          <option>$50,000 - $100,000</option>
-                          <option>$100,000 - $500,000</option>
-                          <option>$500,000+</option>
+                          <option>Under 10,000 BDT</option>
+                          <option>10,000 - 50,000 BDT</option>
+                          <option>50,000 - 100,000 BDT</option>
+                          <option>100,000 - 500,000 BDT</option>
+                          <option>500,000+ BDT</option>
                         </select>
                       </div>
                     </div>
