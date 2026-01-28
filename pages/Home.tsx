@@ -16,6 +16,7 @@ import CyberpunkButton from '../components/ui/CyberpunkButton';
 import WingsFeatureSection from '../components/ui/WingsFeatureSection';
 import FeaturedProjectCard from '../components/ui/FeaturedProjectCard';
 import InfinitePartnershipCarousel from '../components/ui/InfinitePartnershipCarousel';
+import WhatWeDeliver from '../components/home/WhatWeDeliver';
 
 const Home = () => {
   return (
@@ -74,8 +75,11 @@ const Home = () => {
         </div>
       </section>
 
+      {/* What We Deliver Section */}
+      < WhatWeDeliver />
+
       {/* Ecosystem Grid */}
-      <section className="py-24 bg-slate-50 dark:bg-dark-bg relative z-10 border-t border-slate-200 dark:border-gray-900 transition-colors duration-500">
+      < section className="py-24 bg-slate-50 dark:bg-dark-bg relative z-10 border-t border-slate-200 dark:border-gray-900 transition-colors duration-500" >
         <div className="max-w-7xl mx-auto px-6">
           <div className="mb-16 text-center">
             <h2 className="text-3xl md:text-4xl font-mono font-bold mb-4 text-slate-900 dark:text-white">{HOME_CONTENT.wings.title}</h2>
@@ -84,19 +88,19 @@ const Home = () => {
 
           <WingsFeatureSection />
         </div>
-      </section>
+      </section >
 
 
 
       {/* Project Details Section */}
-      <section className="py-24 border-t border-slate-200 dark:border-gray-900 bg-white dark:bg-[#050505] relative overflow-hidden">
+      < section className="py-24 border-t border-slate-200 dark:border-gray-900 bg-white dark:bg-[#050505] relative overflow-hidden" >
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5 dark:opacity-10"
+        < div className="absolute inset-0 opacity-5 dark:opacity-10"
           style={{
             backgroundImage: 'radial-gradient(circle, #6366f1 1px, transparent 1px)',
             backgroundSize: '30px 30px'
           }}>
-        </div>
+        </div >
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="mb-16 text-center">
@@ -142,7 +146,7 @@ const Home = () => {
             </Link>
           </motion.div>
         </div>
-      </section>
+      </section >
 
       {/* Our Partnership Section */}
       {/* 

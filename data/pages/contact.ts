@@ -6,9 +6,11 @@ export const CONTACT_INFO = {
   },
   contact: {
     email: "support@tect0nic.com",
-    phone: "+880 1624124830"
+    phone: "+8801624124830"
   },
   socials: {
     facebook: "https://facebook.com/techtonic.official",
+    linkedin: "https://www.linkedin.com/company/tect0nic",
+    whatsapp: "https://wa.me/+8801624124830"
   }
 };

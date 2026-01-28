@@ -24,7 +24,7 @@ const ContactTopBar: React.FC = () => {
                 {/* Left Side: Phone */}
                 {contact.phone ? (
                     <a
-                        href={`tel:${contact.phone}`}
+                        href={`https://wa.me/${contact.phone}`}
                         className="flex items-center gap-2 hover:text-brand-400 transition-colors duration-300 group py-1"
                     >
                         <Phone size={14} className="text-brand-600 group-hover:text-brand-400 transition-colors" />

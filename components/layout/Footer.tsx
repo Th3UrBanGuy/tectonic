@@ -57,7 +57,7 @@ const Footer = () => {
             <a href={`mailto:${CONTACT_INFO.contact.email}`} className="text-sm text-slate-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors flex items-center gap-2">
               <span className="font-semibold text-slate-900 dark:text-white">Email:</span> {CONTACT_INFO.contact.email}
             </a>
-            <a href={`tel:${CONTACT_INFO.contact.phone}`} className="text-sm text-slate-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors flex items-center gap-2">
+            <a href={`https://wa.me/${CONTACT_INFO.contact.phone}`} className="text-sm text-slate-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors flex items-center gap-2">
               <span className="font-semibold text-slate-900 dark:text-white">Phone:</span> {CONTACT_INFO.contact.phone}
             </a>
           </div>

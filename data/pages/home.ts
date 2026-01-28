@@ -8,6 +8,35 @@ export const HOME_CONTENT = {
       secondary: "R&D LAB ACCESS"
     }
   },
+  deliver: {
+    title: "WE DELIVER",
+    items: [
+      {
+        id: "web",
+        title: "Powerful Web Solutions",
+        description: "Scalable, high-performance web applications tailored to your business architecture.",
+        icon: "Globe"
+      },
+      {
+        id: "pos",
+        title: "Smart POS Systems",
+        description: "Next-gen point-of-sale interfaces integrating seamlessly with your inventory.",
+        icon: "Terminal"
+      },
+      {
+        id: "iot",
+        title: "Custom IoT Projects",
+        description: "Bridging physical and digital realms with intelligent sensor networks and automation.",
+        icon: "Cpu"
+      },
+      {
+        id: "bots",
+        title: "Automated Bots",
+        description: "AI-driven autonomous agents optimizing workflows and customer engagement.",
+        icon: "Bot"
+      }
+    ]
+  },
   wings: {
     title: "OUR WINGS"
   },

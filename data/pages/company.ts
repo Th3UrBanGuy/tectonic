@@ -33,8 +33,36 @@ export const COMPANY_CONTENT = {
 
 export const COMPANY_ACHIEVEMENTS = [
   {
+    title: "First Runner-up | Phitron Story Writing Contest",
+    issuer: "Phitron",
+    year: "2026",
+    color: "text-emerald-500 dark:text-emerald-400",
+    border: "hover:border-emerald-500/50"
+  },
+  {
     title: "IIUC NextGen Hackathon (16th place)",
     issuer: "Programming Hero",
+    year: "2025",
+    color: "text-emerald-500 dark:text-emerald-400",
+    border: "hover:border-emerald-500/50"
+  },
+  {
+    title: "BGCTUB IT Fest Web Development Hackathon(1st Place) [project: Amader Bazar] ",
+    issuer: "BGCTUB IT CLUB",
+    year: "2025",
+    color: "text-emerald-500 dark:text-emerald-400",
+    border: "hover:border-emerald-500/50"
+  },
+  {
+    title: "BGCTUB IT Fest Web Development Hackathon (2nd Place) [project: Kenakata]",
+    issuer: "BGCTUB IT CLUB",
+    year: "2025",
+    color: "text-emerald-500 dark:text-emerald-400",
+    border: "hover:border-emerald-500/50"
+  },
+  {
+    title: "BGCTUB IT Fest CTF (2nd Place)",
+    issuer: "BGCTUB IT CLUB",
     year: "2025",
     color: "text-emerald-500 dark:text-emerald-400",
     border: "hover:border-emerald-500/50"

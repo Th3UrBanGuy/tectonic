@@ -83,3 +83,53 @@ html.dark .logo-main-text {
 html.dark .logo-subtext {
     color: #ffffff;
 }
+
+/* Mobile Adjustments */
+@media (max-width: 640px) {
+    .logo-loader-container {
+        padding: 40px;
+    }
+
+    .logo-pill-container {
+        padding: 10px 0;
+        width: 40px;
+    }
+
+    .logo-main-text {
+        font-size: 28px;
+        letter-spacing: 2px;
+    }
+
+    .logo-text-overflow {
+        padding: 0 20px;
+    }
+
+    .logo-subtext-container {
+        margin-top: 8px;
+    }
+
+    .logo-subtext {
+        font-size: 10px;
+        letter-spacing: 1px;
+    }
+
+    @keyframes expandPill {
+        0% {
+            width: 40px;
+            opacity: 0;
+            transform: scaleX(0.8);
+        }
+
+        60% {
+            width: 240px;
+            opacity: 1;
+            transform: scaleX(1.05);
+        }
+
+        100% {
+            width: 220px;
+            opacity: 1;
+            transform: scaleX(1);
+        }
+    }
+}
