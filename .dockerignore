@@ -1,0 +1,66 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.*
+
+# Next.js build output
+.next
+out
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Env files (inject at runtime)
+.env
+.env.*
+!.env.example
+
+# Vercel
+.vercel
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# IDE
+.idea
+.vscode
+*.swp
+
+# Git
+.git
+.gitignore
+
+# Logs
+*.log
+dev.log
+server.log
+
+# Skills (not part of the app)
+skills
+
+# Examples
+examples
+
+# Scripts (not needed at runtime)
+scripts
+
+# Claude/AI config
+.claude
+.z-ai-config
+
+# Worklog + tool results (contain credentials — never bake into image)
+worklog.md
+tool-results
+upload
+download
+
+# TS build info
+*.tsbuildinfo

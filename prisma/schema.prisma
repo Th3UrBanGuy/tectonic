@@ -1,0 +1,341 @@
+// Prisma schema for the Techtonic project — connected to Neon PostgreSQL.
+// Maps to the existing V1 tables already present in the Neon database.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Admin user for JWT authentication (maps to existing `users` table).
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  name         String?
+  role         String?   @default("admin")
+  isActive     Boolean?  @default(true) @map("is_active")
+  lastLogin    DateTime? @map("last_login")
+  createdAt    DateTime? @default(now()) @map("created_at")
+  updatedAt    DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+// Wings / departments (maps to existing `wings` table).
+model Wing {
+  id               Int      @id @default(autoincrement())
+  slug             String
+  name             String
+  tagline          String?
+  description      String?
+  iconName         String?  @map("icon_name")
+  colorTheme       String?  @map("color_theme")
+  techStack        Json?    @map("tech_stack")
+  features         Json?
+  teamName         String?  @map("team_name")
+  teamLogoUrl      String?  @map("team_logo_url")
+  teamSubtitle     String?  @map("team_subtitle")
+  teamPurpose      String?  @map("team_purpose")
+  teamTimeline     Json?    @map("team_timeline")
+  teamAchievements Json?    @map("team_achievements")
+  createdAt        DateTime? @default(now()) @map("created_at")
+  updatedAt        DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("wings")
+}
+
+// Portfolio projects (maps to existing `projects` table).
+model Project {
+  id             Int       @id @default(autoincrement())
+  title          String
+  slug           String
+  category       String?
+  clientName     String?   @map("client_name")
+  challengeDesc  String?   @map("challenge_desc")
+  solutionDesc   String?   @map("solution_desc")
+  impactDesc     String?   @map("impact_desc")
+  imageUrl       String?   @map("image_url")
+  featured       Boolean?  @default(false)
+  completionDate DateTime? @map("completion_date")
+  updatedAt      DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("projects")
+}
+
+// Partner companies (maps to existing `partners` table).
+model Partner {
+  id         Int       @id @default(autoincrement())
+  name       String
+  logoUrl    String?   @map("logo_url")
+  category   String?
+  description String?
+  websiteUrl String?   @map("website_url")
+  sinceDate  DateTime? @map("since_date")
+  isActive   Boolean?  @default(true) @map("is_active")
+  orderIndex Int?      @default(0) @map("order_index")
+  updatedAt  DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("partners")
+}
+
+// Leadership team (maps to existing `leadership` table).
+model Leader {
+  id          Int       @id @default(autoincrement())
+  name        String
+  role        String
+  bio         String?
+  imageUrl    String?   @map("image_url")
+  socialLinks Json?     @map("social_links")
+  orderIndex  Int?      @default(0) @map("order_index")
+  createdAt   DateTime? @default(now()) @map("created_at")
+  updatedAt   DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("leadership")
+}
+
+// Roadmap items (maps to existing `roadmap_items` table).
+model RoadmapItem {
+  id          Int       @id @default(autoincrement())
+  quarter     String?
+  year        Int?
+  title       String
+  description String?
+  progress    Int?      @default(0)
+  status      String?
+  colorTheme  String?   @map("color_theme")
+  orderIndex  Int?      @default(0) @map("order_index")
+  updatedAt   DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("roadmap_items")
+}
+
+// Tech ecosystem items (maps to existing `tech_ecosystem` table).
+model TechEcosystem {
+  id         Int       @id @default(autoincrement())
+  name       String
+  version    String?
+  status     String?
+  category   String?
+  iconName   String?   @map("icon_name")
+  colorClass String?   @map("color_class")
+  orderIndex Int?      @default(0) @map("order_index")
+  updatedAt  DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("tech_ecosystem")
+}
+
+// Timeline milestones (maps to existing `company_missions` table).
+model CompanyMission {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  iconName    String?   @map("icon_name")
+  orderIndex  Int?      @default(0) @map("order_index")
+  updatedAt   DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("company_missions")
+}
+
+// Key-value site settings (maps to existing `site_settings` table).
+model SiteSetting {
+  id          Int       @id @default(autoincrement())
+  key         String    @unique
+  value       String?
+  type        String?
+  description String?
+  updatedAt   DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
+
+// Social platform links (maps to existing `social_platforms` table).
+model SocialPlatform {
+  id           Int       @id @default(autoincrement())
+  platformName String    @map("platform_name")
+  url          String
+  iconName     String    @map("icon_name")
+  isActive     Boolean?  @default(true) @map("is_active")
+  orderIndex   Int?      @default(0) @map("order_index")
+  createdAt    DateTime? @default(now()) @map("created_at")
+
+  @@map("social_platforms")
+}
+
+// Contact form submissions (maps to existing `contact_submissions` table).
+model ContactSubmission {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  status    String?   @default("New")
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  @@map("contact_submissions")
+}
+
+// Company statistics (maps to existing `company_stats` table).
+model CompanyStat {
+  id         Int       @id @default(autoincrement())
+  label      String
+  value      String
+  suffix     String?
+  iconName   String?   @map("icon_name")
+  orderIndex Int?      @default(0) @map("order_index")
+  updatedAt  DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("company_stats")
+}
+
+// Page content (maps to existing `pages` table).
+model Page {
+  id             Int       @id @default(autoincrement())
+  routePath      String    @map("route_path")
+  title          String
+  metaTitle      String?   @map("meta_title")
+  metaDescription String?  @map("meta_description")
+  heroTitle      String?   @map("hero_title")
+  heroSubtitle   String?   @map("hero_subtitle")
+  heroText       String?   @map("hero_text")
+  heroImageUrl   String?   @map("hero_image_url")
+  updatedAt      DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("pages")
+}
+
+// Menu groups (maps to existing `menus` table).
+model Menu {
+  id          Int       @id @default(autoincrement())
+  locationSlug String   @map("location_slug")
+  name        String
+  description String?
+
+  @@map("menus")
+}
+
+// Menu items (maps to existing `menu_items` table).
+model MenuItem {
+  id         Int       @id @default(autoincrement())
+  menuId     Int?      @map("menu_id")
+  label      String
+  path       String
+  iconName   String?   @map("icon_name")
+  isExternal Boolean?  @default(false) @map("is_external")
+  parentId   Int?      @map("parent_id")
+  orderIndex Int?      @default(0) @map("order_index")
+  updatedAt  DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("menu_items")
+}
+
+// Audit log (maps to existing `audit_log` table).
+model AuditLog {
+  id        Int       @id @default(autoincrement())
+  action    String?
+  entity    String?
+  entityId  String?   @map("entity_id")
+  userId    String?   @map("user_id")
+  details   String?
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  @@map("audit_log")
+}
+
+// User sessions (maps to existing `sessions` table).
+model Session {
+  id        Int       @id @default(autoincrement())
+  token     String?
+  userId    Int?      @map("user_id")
+  expiresAt DateTime? @map("expires_at")
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  @@map("sessions")
+}
+
+// Shortened links (maps to existing `shortened_links` table).
+model ShortenedLink {
+  id          Int       @id @default(autoincrement())
+  originalUrl String?   @map("original_url")
+  slug        String?
+  shortUrl    String?   @map("short_url")
+  password    String?
+  waitingTime Int?      @default(0) @map("waiting_time")
+  maxVisits   Int?      @map("max_visits")
+  currentVisits Int?    @default(0) @map("current_visits")
+  isActive    Boolean?  @default(true) @map("is_active")
+  expiresAt   DateTime? @map("expires_at")
+  createdAt   DateTime? @default(now()) @map("created_at")
+
+  @@map("shortened_links")
+}
+
+// Link visit analytics (maps to existing `link_visits` table).
+model LinkVisit {
+  id        Int       @id @default(autoincrement())
+  linkId    Int?      @map("link_id")
+  referrer  String?
+  userAgent String?   @map("user_agent")
+  ipAddress String?   @map("ip_address")
+  visitedAt DateTime? @default(now()) @map("visited_at")
+
+  @@map("link_visits")
+}
+
+// Certifications (maps to existing `certifications` table).
+model Certification {
+  id          Int       @id @default(autoincrement())
+  name        String?
+  issuer      String?
+  date        DateTime?
+  description String?
+  orderIndex  Int?      @default(0) @map("order_index")
+
+  @@map("certifications")
+}
+
+// Legal documents (maps to existing `legal_docs` table).
+model LegalDoc {
+  id        Int       @id @default(autoincrement())
+  title     String?
+  slug      String?
+  content   String?
+  updatedAt DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("legal_docs")
+}
+
+// Chat threads for the dashboard Messages tab.
+model ChatThread {
+  id        String   @id @default(cuid())
+  name      String
+  avatar    String?
+  status    String   @default("online")
+  lastMsg   String?  @map("last_msg")
+  lastTime  String?  @map("last_time")
+  unread    Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("chat_threads")
+}
+
+// Chat messages within a thread.
+model ChatMessage {
+  id             String   @id @default(cuid())
+  conversationId String   @map("conversation_id")
+  senderName     String   @map("sender_name")
+  senderAvatar   String?  @map("sender_avatar")
+  text           String
+  isMe           Boolean  @default(false) @map("is_me")
+  read           Boolean  @default(true)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("chat_messages_v2")
+}
