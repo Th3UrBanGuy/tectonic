@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from '@/tectonic/lib/router';
 import { Menu, X, ChevronDown, User, Sun, Moon, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,8 +14,10 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, className = '' }) => {
   const { wings } = useContent();
   const [isOpen, setIsOpen] = useState(false);
+  const [wingsDropdownOpen, setWingsDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const wingsDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -23,9 +25,28 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, className = '' }) =
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close mobile menu on route change
   useEffect(() => {
     setIsOpen(false);
+    setWingsDropdownOpen(false);
   }, [location]);
+
+  // Close wings dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (wingsDropdownRef.current && !wingsDropdownRef.current.contains(e.target as Node)) {
+        setWingsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Navigate to a specific wing — uses full page navigation for reliability
+  const navigateToWing = (wingId: string) => {
+    setWingsDropdownOpen(false);
+    window.location.href = `/wings?id=${wingId}`;
+  };
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-500 ${className} ${scrolled ? 'bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-slate-200 dark:border-white/5 py-4 shadow-sm dark:shadow-none' : 'bg-transparent py-6'}`}>
@@ -43,33 +64,48 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, className = '' }) =
               <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-brand-500 group-hover:w-full transition-all duration-300 shadow-[0_0_8px_rgba(20,184,166,0.8)]"></span>
             </Link>
 
-            <div className="relative group">
-              <button className="flex items-center space-x-1 text-[11px] font-mono font-bold tracking-widest text-slate-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-white transition-colors">
+            {/* WINGS DROPDOWN — click to open/close, click outside to dismiss */}
+            <div ref={wingsDropdownRef} className="relative">
+              <button
+                onClick={() => setWingsDropdownOpen(!wingsDropdownOpen)}
+                className="flex items-center space-x-1 text-[11px] font-mono font-bold tracking-widest text-slate-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-white transition-colors cursor-pointer select-none"
+              >
                 <span>WINGS</span>
-                <ChevronDown size={10} />
+                <ChevronDown
+                  size={10}
+                  className={`transition-transform duration-300 ${wingsDropdownOpen ? 'rotate-180' : ''}`}
+                />
               </button>
-              {/* Dropdown */}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-6 w-64 bg-white dark:bg-black/90 border border-slate-200 dark:border-white/10 rounded-lg p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 backdrop-blur-xl shadow-xl">
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-black border-t border-l border-slate-200 dark:border-white/10 rotate-45"></div>
-                {wings.map((wing) => (
-                  <Link
-                    key={wing.id}
-                    to={`/wings?id=${wing.id}`}
-                    className="block px-4 py-3 hover:bg-slate-50 dark:hover:bg-white/5 group/item transition-colors border-l-2 border-transparent hover:border-brand-500 rounded-md"
+
+              <AnimatePresence>
+                {wingsDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-white dark:bg-black/90 border border-slate-200 dark:border-white/10 rounded-lg p-1 backdrop-blur-xl shadow-xl"
                   >
-                    <div className="font-mono text-xs font-bold text-slate-800 dark:text-white group-hover/item:text-brand-600 dark:group-hover/item:text-brand-400 transition-colors">{wing.name}</div>
-                    <div className="text-[10px] text-slate-500 dark:text-gray-500 font-mono uppercase tracking-wide mt-1">{wing.tagline}</div>
-                  </Link>
-                ))}
-              </div>
+                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-black border-t border-l border-slate-200 dark:border-white/10 rotate-45"></div>
+                    {wings.length === 0 ? (
+                      <div className="px-4 py-3 text-xs text-slate-400 font-mono">Loading wings...</div>
+                    ) : (
+                      wings.map((wing) => (
+                        <button
+                          key={wing.id}
+                          onClick={() => navigateToWing(wing.id)}
+                          className="w-full text-left block px-4 py-3 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors border-l-2 border-transparent hover:border-brand-500 rounded-md cursor-pointer"
+                        >
+                          <div className="font-mono text-xs font-bold text-slate-800 dark:text-white transition-colors">{wing.name}</div>
+                          <div className="text-[10px] text-slate-500 dark:text-gray-500 font-mono uppercase tracking-wide mt-1">{wing.tagline}</div>
+                        </button>
+                      ))
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* 
-            <Link to="/innovation" className="text-[11px] font-mono font-bold tracking-widest text-slate-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-white transition-colors relative group">
-              INNOVATION
-              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-brand-500 group-hover:w-full transition-all duration-300 shadow-[0_0_8px_rgba(20,184,166,0.8)]"></span>
-            </Link>
-            */}
             <Link to="/portfolio" className="text-[11px] font-mono font-bold tracking-widest text-slate-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-white transition-colors relative group">
               PORTFOLIO
               <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-brand-500 group-hover:w-full transition-all duration-300 shadow-[0_0_8px_rgba(20,184,166,0.8)]"></span>
@@ -142,12 +178,48 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, className = '' }) =
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: '100vh' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden fixed inset-0 bg-white/95 dark:bg-black/95 backdrop-blur-xl z-10 pt-24 px-6"
+            className="lg:hidden fixed inset-0 bg-white/95 dark:bg-black/95 backdrop-blur-xl z-10 pt-24 px-6 overflow-y-auto"
           >
             <div className="flex flex-col space-y-6 pt-8">
               <Link to="/" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">HOME</Link>
-              <Link to="/wings" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">WINGS</Link>
-              {/* <Link to="/innovation" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">INNOVATION</Link> */}
+
+              {/* Mobile Wings — expandable list */}
+              <div className="border-b border-slate-200 dark:border-white/10 pb-4">
+                <button
+                  onClick={() => setWingsDropdownOpen(!wingsDropdownOpen)}
+                  className="flex items-center justify-between w-full text-2xl font-mono font-bold text-slate-900 dark:text-white"
+                >
+                  <span>WINGS</span>
+                  <ChevronDown size={20} className={`transition-transform duration-300 ${wingsDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {wingsDropdownOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="flex flex-col space-y-3 pt-4 pl-4">
+                        {wings.map((wing) => (
+                          <button
+                            key={wing.id}
+                            onClick={() => {
+                              setIsOpen(false);
+                              setWingsDropdownOpen(false);
+                              window.location.href = `/wings?id=${wing.id}`;
+                            }}
+                            className="text-left text-lg font-mono text-slate-600 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+                          >
+                            {wing.name}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               <Link to="/portfolio" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">PORTFOLIO</Link>
               <Link to="/company" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4">COMPANY</Link>
               <Link to="/dashboard" onClick={() => setIsOpen(false)} className="text-2xl font-mono font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 pb-4 flex items-center gap-2"><User size={20} /> CLIENT ACCESS</Link>

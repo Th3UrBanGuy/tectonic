@@ -180,7 +180,7 @@ Techtonic is a modern enterprise web platform showcasing software development, r
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/Th3UrBanGuy/tectonic.git
 cd tectonic
 
 # Install dependencies
