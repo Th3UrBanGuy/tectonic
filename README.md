@@ -1,171 +1,117 @@
-# TECHTONIC
+# Techtonic — Enterprise Digital Platform
 
-> **Architecting Tomorrow's Infrastructure** — A fully dynamic, database-driven enterprise platform with a powerful admin CMS.
+> **Architecting Tomorrow's Infrastructure**
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.x-000000?style=flat-square&logo=next.js)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-4169E1?style=flat-square&logo=postgresql)](https://neon.tech)
-[![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=flat-square&logo=prisma)](https://prisma.io)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS_4-06B6D4?style=flat-square&logo=tailwindcss)](https://tailwindcss.com)
+Techtonic is a premium, production-grade enterprise platform built with Next.js 16, Tailwind CSS v4, Prisma ORM, and Neon PostgreSQL. It serves as the official digital presence for a technology enterprise specializing in software development, robotics & automation, and consultancy services.
 
 ---
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
-- [Database](#database)
-- [Admin Panel](#admin-panel)
-- [Security](#security)
-- [API Reference](#api-reference)
-- [Developer Documentation](#developer-documentation)
-- [Deployment](#deployment)
+- [Environment Variables](#environment-variables)
 - [Project Structure](#project-structure)
-
----
-
-## Overview
-
-Techtonic is a modern enterprise web platform showcasing software development, robotics & automation, and consultancy services. The entire site — every piece of text, every wing, every project, every team member — is **100% database-driven** and editable from a powerful admin dashboard. No static data files. No hardcoded content. The database is the single source of truth.
-
-### Key Highlights
-
-- **Fully Dynamic CMS** — All content (wings, projects, team, partners, timeline, tech stack, roadmap, home page, company page, contact info, site settings) is stored in PostgreSQL and editable from the admin panel
-- **Bullet-Fast Data Loading** — A single batch API endpoint fetches all content in one request with 60-second localStorage caching for instant page navigation
-- **Skeleton Screens** — Animated skeleton placeholders make page loads feel instant
-- **JWT Authentication** — Secure admin portal with bcrypt password hashing, rate limiting, and role-based access control
-- **Security Hardened** — CSP headers, X-Frame-Options, rate limiting, input validation, admin-only API guards, and more
-- **Responsive Design** — Mobile-first, dark/light theme, framer-motion animations
-- **Multi-Platform Deployment** — Z.ai, Vercel, AWS (Docker), Railway, Heroku
-
----
-
-## Features
-
-### Public Site
-
-| Feature | Description |
-|---------|-------------|
-| **Home** | Hero section, "WE DELIVER" cards, wings showcase, featured projects |
-| **Wings** | Tabbed interface for each wing (Software, Robotics, etc.) with team details, capabilities, tech stack, timeline, achievements |
-| **Portfolio** | Filterable project grid with case study detail pages |
-| **Company** | Hero, stats, mission statement, leadership team, achievements |
-| **Contact** | Multi-step stepper form with DB submission |
-| **Theme Toggle** | Dark/light mode with localStorage persistence |
-
-### Admin Dashboard
-
-| Tab | Features |
-|-----|----------|
-| **Overview** | Real-time DB stats (wings, projects, team, partners, inquiries, users), traffic analytics, system status |
-| **Link Center** | URL shortener with password protection, analytics, visit tracking |
-| **Messages** | DB-persisted chat threads with auto-reply |
-| **Operatives** | Admin user management (CRUD) with role-based access |
-| **Inquiries** | Contact form submissions with status management (New/Read/Starred/Archived) |
-| **Content** | Full CMS: Wings Manager, Team Manager, Portfolio Manager, Innovation Manager (tech stack + roadmap), Partners Editor, Pages & Hero Editor |
-| **Settings** | Personal info, password change, site settings, contact configuration |
-
----
-
-## Tech Stack
-
-### Frontend
-- **Next.js 16** (App Router, Turbopack)
-- **TypeScript 5** (strict typing)
-- **Tailwind CSS 4** (utility-first styling)
-- **Framer Motion** (animations)
-- **Recharts** (data visualization)
-- **Lucide React** (icons)
-
-### Backend
-- **Prisma ORM** (type-safe database client)
-- **PostgreSQL** (Neon serverless database)
-- **JWT** (jsonwebtoken) for authentication
-- **bcryptjs** (password hashing, cost factor 12)
-
-### Infrastructure
-- **Bun** (package manager & runtime)
-- **Docker** (containerized deployment)
-- **Caddy** (reverse proxy gateway)
+- [Database Schema](#database-schema)
+- [API Reference](#api-reference)
+- [Admin Panel](#admin-panel)
+- [SEO System](#seo-system)
+- [Deployment](#deployment)
+- [Development](#development)
 
 ---
 
 ## Architecture
 
-### Data Flow Diagram
-
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     BROWSER (Client)                         │
-│                                                              │
-│  ┌──────────┐   ┌──────────────┐   ┌─────────────────────┐ │
-│  │  Public   │   │   Admin      │   │  ContentContext     │ │
-│  │  Pages    │   │  Dashboard   │   │  (React Context)    │ │
-│  │           │   │              │   │                     │ │
-│  │ Home      │   │ Overview     │   │ ┌─────────────────┐ │ │
-│  │ Wings     │   │ Link Center  │   │ │ Batch Fetch     │ │ │
-│  │ Portfolio │   │ Messages     │   │ │ (1 API call)    │ │ │
-│  │ Company   │   │ Operatives   │   │ │       ↓         │ │ │
-│  │ Contact   │   │ Inquiries    │   │ │ localStorage    │ │ │
-│  │           │   │ Content CMS  │   │ │ Cache (60s TTL) │ │ │
-│  │           │   │ Settings     │   │ │       ↓         │ │ │
-│  │           │   │              │   │ │ State → Pages   │ │ │
-│  └─────┬─────┘   └──────┬───────┘   └────────┬────────────┘ │
-│        │                │                    │              │
-└────────┼────────────────┼────────────────────┼──────────────┘
-         │                │                    │
-         ▼                ▼                    ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   NEXT.JS API ROUTES                         │
-│                                                              │
-│  /api/content/all    → GET all content (batch, public)      │
-│  /api/content        → GET/PUT content by type (admin PUT)   │
-│  /api/auth/login     → POST login (rate-limited)             │
-│  /api/auth/verify    → GET verify JWT                        │
-│  /api/auth/users     → GET/POST/PUT/DELETE (admin only)     │
-│  /api/auth/change-pw → POST change password                  │
-│  /api/contact        → GET (admin) / POST (public)           │
-│  /api/contact/[id]   → PATCH/DELETE (admin)                  │
-│  /api/chat/threads   → GET/POST/DELETE (admin)               │
-│  /api/chat/messages  → GET/POST (admin)                      │
-│  /api/content/all    → GET batch (optimized, cached)         │
-└────────────────────────────┬────────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   PRISMA ORM + PostgreSQL                    │
-│                                                              │
-│  Tables: users, wings, projects, partners, leadership,       │
-│  roadmap_items, tech_ecosystem, company_missions,            │
-│  site_settings, social_platforms, contact_submissions,       │
-│  chat_threads, chat_messages                                 │
-│                                                              │
-│  Neon PostgreSQL (serverless, pooled connection)              │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│                     BROWSER (SPA)                       │
+│  ThemeContext ─── AuthContext ─── ContentContext          │
+│       │              │                  │                │
+│  ThemeProvider   AuthProvider      ContentProvider       │
+│       │              │                  │                │
+│       └──────────────┴──────────────────┘                │
+│                    AppShell                              │
+│              ┌───────┴────────┐                          │
+│           Navbar        DashboardLayout                  │
+│           Footer         Sidebar                         │
+│      ContactTopBar       Tabs                           │
+└──────────────────────┬──────────────────────────────────┘
+                       │  fetch()
+┌──────────────────────┴──────────────────────────────────┐
+│                   Next.js 16 App Router                  │
+│                  (Server + Client Components)            │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │              API Routes (16 endpoints)           │    │
+│  │  /api/auth/*    /api/content/*   /api/links     │    │
+│  │  /api/contact/* /api/chat/*      /api/og        │    │
+│  │  /api/certification-gallery     /api/go/[slug]  │    │
+│  └──────────────────────┬──────────────────────────┘    │
+│                         │                                │
+│  ┌──────────────────────┴──────────────────────────┐    │
+│  │              Prisma ORM                          │    │
+│  │         Neon PostgreSQL (Serverless)             │    │
+│  └─────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────┘
 ```
 
-### How Content Loading Works
+### Key Architectural Decisions
 
-1. **First page load** — `ContentContext` calls `GET /api/content/all` (single request). The server runs all Prisma queries in parallel via `Promise.all()`, returns one JSON payload (~16KB). The response is cached in `localStorage` with a 60-second TTL.
+| Decision | Rationale |
+|----------|-----------|
+| App Router (not Pages) | Server components for SEO metadata, RSC streaming, route handlers |
+| Client wrappers per page | Each page exports `generateMetadata` (server) + renders `"use client"` wrapper |
+| ContentContext as master store | Single batch fetch from `/api/content/all`, 60s localStorage cache, optimistic UI |
+| DB as single source of truth | All content managed via admin → DB, no static data files |
+| ISR for pSEO pages | `revalidate: 3600` on 8×8 = 64 industry×service pages |
+| force-dynamic on main pages | DB queried at request time for fresh content |
 
-2. **Subsequent navigation** (within 60s) — `ContentContext` reads from `localStorage` cache. **Zero API calls.** Pages render instantly.
+---
 
-3. **After 60 seconds** — Cache expires. Next navigation triggers a fresh `GET /api/content/all` call. Old data is shown until the new data arrives (stale-while-revalidate pattern).
+## Tech Stack
 
-4. **After admin edits content** — The cache is immediately invalidated (`localStorage.removeItem`). The next page load fetches fresh data from the DB.
+### Core
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| Next.js | 16.1.x | React framework (App Router) |
+| React | 19.x | UI library |
+| TypeScript | 5.x | Type safety |
+| Tailwind CSS | 4.x | Utility-first CSS |
 
-### How Admin Saves Work
+### Backend
+| Technology | Purpose |
+|-----------|---------|
+| Prisma ORM | Database access layer |
+| Neon PostgreSQL | Serverless PostgreSQL database |
+| bcryptjs | Password hashing (cost 12) |
+| jsonwebtoken | JWT authentication (HS256) |
 
-1. Admin edits content in a dashboard form (e.g., Wings Manager)
-2. The form calls `setWings(newData)` on `ContentContext`
-3. `ContentContext` updates React state immediately (optimistic UI)
-4. `ContentContext` calls `PUT /api/content?type=wings` with the full array
-5. The API validates the admin JWT, replaces all rows in the `wings` table
-6. The localStorage cache is invalidated
-7. Next page load fetches fresh data from the DB
+### UI
+| Technology | Purpose |
+|-----------|---------|
+| Framer Motion | Animations & page transitions |
+| Lucide React | Icon system (100+ icons) |
+| Recharts | Dashboard charts |
+| Sonner | Toast notifications |
+| Radix UI | Accessible primitives |
+
+### SEO & Analytics
+| Technology | Purpose |
+|-----------|---------|
+| Google Analytics 4 | Traffic analytics (`G-2TX572FMD6`) |
+| Google Search Console | Search performance |
+| Ahrefs Analytics | Backlink & SEO analytics |
+| Vercel Speed Insights | Core Web Vitals monitoring |
+| Schema.org JSON-LD | Structured data (Organization, WebSite, BreadcrumbList, etc.) |
+
+### Deployment
+| Technology | Purpose |
+|-----------|---------|
+| Vercel | Primary deployment target |
+| Docker | Containerized deployment |
+| Caddy | Reverse proxy (self-hosted) |
 
 ---
 
@@ -173,81 +119,188 @@ Techtonic is a modern enterprise web platform showcasing software development, r
 
 ### Prerequisites
 
-- **Node.js 20+** or **Bun 1.0+**
-- A **PostgreSQL** database (Neon, Supabase, or local)
+- **Node.js** ≥ 20
+- **Bun** (recommended) or npm
+- **Neon PostgreSQL** account (free tier works)
 
-### Installation
+### 1. Clone & Install
 
 ```bash
-# Clone the repository
 git clone https://github.com/Th3UrBanGuy/tectonic.git
 cd tectonic
-
-# Install dependencies
 bun install
+```
 
-# Set up environment variables
+### 2. Configure Environment
+
+```bash
 cp .env.example .env
-# Edit .env with your DATABASE_URL and JWT_SECRET
+```
 
-# Generate Prisma client
-bunx prisma generate
+Edit `.env` with your values (see [Environment Variables](#environment-variables)).
 
-# Seed the database with initial content
-bun run seed:db
+### 3. Initialize Database
 
-# Start the development server
+```bash
+bun run db:push      # Push Prisma schema to Neon
+bun run seed:db      # Seed admin user + sample data
+bun run seed:sections # Seed 33 section visibility records
+```
+
+### 4. Start Development
+
+```bash
 bun run dev
 ```
 
-The app will be available at `http://localhost:3000`.
+Open [http://localhost:3000](http://localhost:3000).
 
-### Default Admin Credentials
+### 5. Admin Login
 
-- **Email:** `admin@tectonic.com`
-- **Password:** `admin123`
-
-> ⚠️ **Change the password immediately after first login via Settings → Password.**
+Navigate to `/login` and use credentials from `.env` (default: `admin@techtonic.dev` / seed password).
 
 ---
 
-## Database
+## Environment Variables
 
-### Schema Overview
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | ✅ | Neon PostgreSQL connection string |
+| `JWT_SECRET` | ✅ | JWT signing secret (min 32 chars) |
+| `CONTACT_EMAIL` | ✅ | Contact form recipient email |
+| `NEXT_PUBLIC_SITE_URL` | ✅ | Production site URL |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | ❌ | Google Search Console token |
+| `NEXT_PUBLIC_GOOGLE_ANALYTICS_ID` | ❌ | GA4 measurement ID |
+| `NEXT_PUBLIC_AHREFS_ANALYTICS_KEY` | ❌ | Ahrefs Analytics key |
 
-The database uses 22 Prisma models mapping to existing PostgreSQL tables:
+---
 
-| Model | Purpose | Admin Editable |
-|-------|---------|---------------|
-| `User` | Admin accounts (JWT auth) | ✅ (Operatives tab) |
-| `Wing` | Wings/departments with team data | ✅ (Content → Wings) |
-| `Project` | Portfolio projects | ✅ (Content → Portfolio) |
-| `Partner` | Technology partners | ✅ (Content → Partners) |
-| `Leader` | Leadership team members | ✅ (Content → Team) |
-| `RoadmapItem` | Innovation roadmap items | ✅ (Content → Innovation) |
-| `TechEcosystem` | Tech stack items | ✅ (Content → Innovation) |
-| `CompanyMission` | Timeline milestones | ✅ (Content → Pages) |
-| `SiteSetting` | Key-value settings + JSON content (home, company, portfolio, contact) | ✅ (Content → Pages, Settings) |
-| `SocialPlatform` | Social media links | ✅ (seeded) |
-| `ContactSubmission` | Contact form submissions | ✅ (Inquiries tab) |
-| `ChatThread` | Dashboard chat threads | ✅ (Messages tab) |
-| `ChatMessage` | Chat messages | ✅ (Messages tab) |
-
-### Seeding
-
-```bash
-bun run seed:db
-```
-
-This clears all content tables and re-seeds with the data from `src/tectonic/data/*`. It creates the admin user, all wings, projects, team members, partners, roadmap items, tech stack, timeline, site settings, and social platforms.
-
-### Database Connection
-
-The app uses Neon PostgreSQL with Prisma's connection pooling. The `DATABASE_URL` in `.env` should use the pooled connection string (host with `-pooler`):
+## Project Structure
 
 ```
-DATABASE_URL=postgresql://user:pass@host-pooler.region.aws.neon.tech/dbname?sslmode=require
+src/
+├── app/                          # Next.js App Router
+│   ├── layout.tsx                # Root layout (fonts, metadata, JsonLd, SpeedInsights)
+│   ├── page.tsx                  # Home (force-dynamic)
+│   ├── not-found.tsx             # Custom 404
+│   ├── sitemap.ts                # Dynamic XML sitemap
+│   ├── robots.ts                 # Dynamic robots.txt
+│   ├── globals.css               # Global styles + CSS variables
+│   ├── [industry]/page.tsx       # pSEO industry landing (ISR)
+│   ├── [industry]/[service]/     # pSEO service landing (ISR)
+│   ├── portfolio/[id]/           # Project detail
+│   ├── api/                      # API routes (16 endpoints)
+│   └── *Client.tsx               # Client wrappers for each page
+│
+├── components/                   # Next.js app-level components
+│   ├── AppShell.tsx              # Theme + Auth + Content providers
+│   ├── JsonLd.tsx                # Structured data (Organization, WebSite, NavElement)
+│   ├── Breadcrumbs.tsx           # Breadcrumb nav with JSON-LD
+│   └── ServiceLanding.tsx        # pSEO landing page template
+│
+├── lib/                          # Server-side utilities
+│   ├── auth.ts                   # JWT + password utilities
+│   ├── db.ts                     # Prisma client singleton
+│   ├── seo.ts                    # Dynamic SEO metadata from DB
+│   └── utils-jsonld.ts           # safeJsonLd() XSS prevention
+│
+└── tectonic/                     # Core SPA codebase
+    ├── components/
+    │   ├── ThemeContext.tsx       # Light/dark theme
+    │   ├── AuthContext.tsx        # JWT auth state
+    │   ├── ContentContext.tsx     # Master content store
+    │   ├── Loader.tsx             # Premium glass shimmer loader
+    │   ├── layout/                # Navbar, Footer, ContactTopBar, TectonicLogo
+    │   ├── home/                  # HeroTitle, WhatWeDeliver, ThreeDBackground, LightParticles
+    │   ├── ui/                    # 17 reusable UI components
+    │   └── dashboard/             # 27 admin panel components
+    ├── pages/                     # Page components (Home, Company, Contact, etc.)
+    ├── services/                  # contentStorage, auth, configStorage
+    ├── data/                      # Static data (wings, projects, team, timeline)
+    └── types.ts                   # TypeScript type definitions
 ```
+
+---
+
+## Database Schema
+
+### Core Models
+
+| Model | Fields | Purpose |
+|-------|--------|---------|
+| **User** | id, name, email, password, role, avatarUrl, createdAt | Admin users |
+| **ContactSubmission** | id, name, email, subject, message, phone, status, createdAt | Contact form |
+| **ShortLink** | id, slug, url, password, maxVisits, expiresAt, active, visits, createdAt | URL shortener |
+| **LinkVisit** | id, linkId, ip, userAgent, referer, createdAt | Visit analytics |
+| **ChatThread** | id, userId, title, createdAt | Support chat threads |
+| **ChatMessage** | id, threadId, sender, content, createdAt | Chat messages |
+| **Industry** | id, name, slug, description, metaTitle, metaDescription, icon, orderIndex | pSEO industries |
+| **ServicePage** | id, industryId, serviceSlug, pageTitle, metaTitle, metaDescription, heroTitle, heroDescription, bodyContent, features, techStack, ctaText, ctaLink, imageUrl, active | pSEO service pages |
+| **CertificationGallery** | id, title, issuer, date, description, imageUrl, linkUrl, category, orderIndex, active | Certificate gallery |
+| **CompanyStat** | id, label, value, suffix, iconName, orderIndex | Company metrics |
+| **CompanyMission** | id, mission, vision, values | Mission statement |
+| **Timeline** | id, title, description, iconName, orderIndex | Company milestones |
+| **TechEcosystem** | id, name, version, status, iconName, colorClass | Tech stack items |
+| **RoadmapItem** | id, refId, quarter, title, description, progress, status, colorClass | Roadmap milestones |
+| **Partner** | id, name, logoUrl, type, orderIndex | Business partners |
+| **PageSEO** | id, routePath, metaTitle, metaDescription, ogImage, keywords, noIndex | Per-page SEO |
+| **SiteSetting** | id, key, value | Site-wide settings (JSON) |
+| **SectionVisibility** | id, sectionKey, visible, page | Section toggle state |
+
+### JSON Content Fields (stored in SiteSetting)
+
+| Key | Content |
+|-----|---------|
+| `wings` | Wing array (id, name, tagline, description, team, tech, features) |
+| `projects` | Portfolio projects (title, category, client, challenge/solution/impact, image) |
+| `team` | Leadership team (name, role, bio, image, website) |
+| `partnerships` | Partners (name, logo, type) |
+| `homeContent` | Home page hero, services, testimonials |
+| `companyContent` | Company page sections, certifications |
+| `portfolioContent` | Portfolio page configuration |
+| `contactConfig` | Contact page topbar, form settings |
+
+---
+
+## API Reference
+
+### Authentication
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/auth/login` | POST | No | Login, returns JWT |
+| `/api/auth/verify` | GET | Token | Verify JWT validity |
+| `/api/auth/count` | GET | No | User count (lightweight) |
+| `/api/auth/profile` | GET/PUT | Bearer | Get/update user profile |
+| `/api/auth/avatar` | POST/DELETE | Bearer | Upload/remove avatar |
+| `/api/auth/change-password` | POST | Bearer | Change password |
+| `/api/auth/users` | GET/POST/PUT/DELETE | Bearer | CRUD admin users |
+
+### Content
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/content?type={type}` | GET | No | Fetch content by type |
+| `/api/content?type={type}` | PUT | Admin | Update content by type |
+| `/api/content/all` | GET | No | All content in single request |
+
+### Public
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/contact` | POST | No | Submit contact form |
+| `/api/og` | GET | No | Dynamic OG image generation |
+| `/api/go/{slug}` | GET | No | Short link redirect |
+
+### Admin
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/contact/{id}` | PATCH/DELETE | Middleware | Manage inquiries |
+| `/api/links` | GET/POST/PUT/DELETE | Bearer | CRUD short links |
+| `/api/chat/threads` | GET/POST/DELETE | Bearer | Chat threads |
+| `/api/chat/messages` | GET/POST | Bearer | Chat messages |
+| `/api/certification-gallery` | GET/POST/PUT/DELETE | Admin | Gallery CRUD |
 
 ---
 
@@ -255,338 +308,171 @@ DATABASE_URL=postgresql://user:pass@host-pooler.region.aws.neon.tech/dbname?sslm
 
 ### Access
 
-Navigate to `/login` and authenticate with admin credentials. The dashboard is at `/dashboard`.
+- URL: `/login`
+- Default credentials: Set in seed script or create via API
 
-### Content Management
+### Dashboard Tabs
 
-The **Content** tab has 6 sub-sections:
+| Tab | Purpose |
+|-----|---------|
+| **Overview** | Stats cards, link visit chart, system status |
+| **Operatives** | Admin user CRUD (name, email, role, password) |
+| **Inquiries** | Contact form submissions management |
+| **Content** | 14 sub-tabs for all site content |
+| **Visibility** | Toggle 33 sections on/off per page |
+| **Link Center** | URL shortener with analytics |
+| **Messages** | Internal chat system |
+| **SEO** | SEO health dashboard + page metadata editor |
+| **Docs & Guides** | Built-in documentation (7 sections) |
+| **Settings** | Profile, password, notifications, appearance |
 
-1. **Innovation** — Manage tech stack items and roadmap items
-2. **Portfolio** — Add/edit/delete projects with image upload
-3. **Wings** — Manage wings with full team details (name, logo, purpose, timeline, achievements)
-4. **Team** — Manage leadership team members
-5. **Pages & Hero** — Edit home page content, company page content, partnership stats
-6. **Partners** — Add/remove technology partners
+### Content Management (14 Sub-Tabs)
 
-All changes are saved to the database instantly via `PUT /api/content?type=...`.
+| Sub-Tab | What It Manages |
+|---------|----------------|
+| Innovation | Tech stack items + roadmap milestones |
+| Portfolio | Project cards (title, category, challenge/solution/impact) |
+| Wings | Department/division cards (team, tech, features) |
+| Team | Leadership team profiles |
+| Partners | Business partner logos |
+| Certs & Awards | Company achievements + wing milestones |
+| Cert Gallery | Certificate images with upload/link |
+| Stats | Company metrics (label, value, suffix, icon) |
+| Timeline | Company milestone entries |
+| Industries | pSEO industry definitions |
+| Home Content | Home page hero, services, testimonials |
+| Company Content | Company page sections |
+| Portfolio Content | Portfolio page configuration |
+| Site Settings | Site name, contact info, social links, maintenance mode |
 
-### Settings
+### Section Visibility (33 Sections)
 
-- **Personal** — Update admin profile
-- **Password** — Change password (bcrypt cost 12)
-- **Site Settings** — Site name, tagline, contact info, social links
-- **Account** — Export data, danger zone
+**Layout:** topbar, navbar, navHome, navWings, navPortfolio, navCompany, navContact, navDashboard, footer, footerEcosystem, footerCompany, footerConnect, footerCopyright
 
----
+**Home:** hero, deliver, wings, projects, techStack, roadmap, partners
 
-## Security
+**Company:** hero, stats, mission, leadership, certifications, certGallery, timeline
 
-### Authentication
+**Portfolio:** hero, projects
 
-- **JWT** with 8-hour expiry, `iss`/`aud` claims, HS256 algorithm
-- **bcryptjs** password hashing (cost factor 12)
-- **Rate limiting** on login (5 attempts / 15 minutes per IP+email)
-- **Account lockout** via `isActive` flag
+**Wings:** hero, grid
 
-### Authorization
-
-- All admin API routes require `requireAdmin(req)` — checks JWT + `role === 'admin'`
-- `GET /api/contact` (PII) requires admin auth
-- `PUT /api/content` requires admin auth
-- All chat/thread/message routes require admin auth
-- User management (CRUD) requires admin auth
-
-### Input Validation
-
-- Email format validation (`validateEmail()`)
-- Password strength validation (min 6, max 128 chars)
-- String length limits (`sanitizeString()`, max 1000 chars)
-- Array size limits (max 1000 items per content type)
-- Content type whitelist validation on PUT endpoints
-- Contact form rate limiting (10 submissions / 15 minutes)
-
-### Security Headers
-
-```
-Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; ...
-X-Frame-Options: DENY
-X-Content-Type-Options: nosniff
-Referrer-Policy: strict-origin-when-cross-origin
-Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
-Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
-```
-
-### Edge Middleware
-
-`src/middleware.ts` protects `/dashboard` routes server-side — verifies JWT before serving the page bundle.
+**Contact:** hero, form
 
 ---
 
-## API Reference
+## SEO System
 
-### Public Endpoints
+### Structured Data (JSON-LD)
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/content/all` | Fetch all content in a single request (batch, cached) |
-| `GET` | `/api/content?type={type}` | Fetch a specific content type |
-| `POST` | `/api/contact` | Submit a contact form (rate-limited) |
-| `POST` | `/api/auth/login` | Login with email + password (rate-limited) |
-| `GET` | `/api/auth/verify` | Verify a JWT token |
+Every page includes Schema.org JSON-LD:
 
-### Admin Endpoints (require `Authorization: Bearer <token>` with admin role)
+- **Root layout:** Organization (sameAs, ContactPoint, areaServed), WebSite (SearchAction), SiteNavigationElement
+- **Industry pages:** CollectionPage + ItemList of services + BreadcrumbList
+- **Service pages:** Service + BreadcrumbList
+- **Portfolio detail:** Article (datePublished, dateModified)
+- **All pages:** BreadcrumbList navigation
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `PUT` | `/api/content?type={type}` | Replace all content for a type |
-| `GET` | `/api/contact` | List all contact submissions |
-| `PATCH` | `/api/contact/[id]` | Update submission status |
-| `DELETE` | `/api/contact/[id]` | Delete a submission |
-| `GET` | `/api/auth/users` | List all admin users |
-| `POST` | `/api/auth/users` | Create a new user |
-| `PUT` | `/api/auth/users` | Update a user |
-| `DELETE` | `/api/auth/users` | Delete a user |
-| `POST` | `/api/auth/change-password` | Change current user's password |
-| `GET/POST/DELETE` | `/api/chat/threads` | Manage chat threads |
-| `GET/POST` | `/api/chat/messages` | List/send chat messages |
+### Programmatic SEO (pSEO)
 
-### Content Types
+8 industries × 8 services = **64 landing pages** with ISR (revalidate: 3600s):
 
-`wings`, `projects`, `team`, `partnerships`, `timeline`, `techStack`, `roadmap`, `homeContent`, `companyContent`, `portfolioContent`, `contactConfig`, `settings`
+| Industry | Services |
+|----------|----------|
+| Retail, Healthcare, Education, Manufacturing, Finance, Automotive, Real Estate, Logistics | Web Apps, Mobile Apps, SaaS, AI Integration, Cloud/DevOps, UI/UX Design, API Development, Data Engineering |
 
----
+Each page has: unique meta title/description, hero section, body content, features list, tech stack, CTA.
 
-## Developer Documentation
+### Meta Tags
 
-### Project Structure
+- Dynamic `generateMetadata` on every page route
+- OG images (dynamic via `/api/og`)
+- Twitter Card meta tags
+- Canonical URLs
+- Google Search Console verification
+- Ahrefs site verification
 
-```
-tectonic/
-├── src/
-│   ├── app/                         # Next.js App Router
-│   │   ├── api/                     # API routes (server-side)
-│   │   │   ├── auth/                # Auth endpoints (login, verify, users, change-password)
-│   │   │   ├── content/             # Content CRUD + batch endpoint
-│   │   │   ├── contact/             # Contact form submissions
-│   │   │   └── chat/                # Chat threads + messages
-│   │   ├── layout.tsx               # Root layout (fonts, metadata, AppShell)
-│   │   ├── page.tsx                 # Home route
-│   │   ├── login/page.tsx           # Login route
-│   │   ├── dashboard/page.tsx       # Dashboard route (protected)
-│   │   ├── wings/page.tsx           # Wings route
-│   │   ├── portfolio/page.tsx       # Portfolio route
-│   │   ├── portfolio/[id]/page.tsx  # Project detail route (dynamic)
-│   │   ├── company/page.tsx         # Company route
-│   │   └── contact/page.tsx         # Contact route
-│   │
-│   ├── components/
-│   │   └── AppShell.tsx             # Shared client chrome (providers + layout)
-│   │
-│   ├── lib/
-│   │   ├── db.ts                    # Prisma client singleton
-│   │   └── auth.ts                  # JWT, bcrypt, validation helpers
-│   │
-│   ├── middleware.ts                # Edge middleware (dashboard protection)
-│   │
-│   └── tectonic/                    # Tectonic application code
-│       ├── components/
-│       │   ├── ContentContext.tsx   # Global content provider (batch fetch + cache)
-│       │   ├── AuthContext.tsx      # Auth state provider
-│       │   ├── ThemeContext.tsx     # Dark/light theme provider
-│       │   ├── SystemStatusWrapper.tsx  # Maintenance mode checker
-│       │   ├── ProtectedRoute.tsx   # Auth guard for /dashboard
-│       │   ├── ScrollToTop.tsx      # Scroll restoration on navigation
-│       │   ├── dashboard/           # Admin panel components (18 files)
-│       │   ├── layout/              # Navbar, Footer, ContactTopBar, TectonicLogo
-│       │   ├── home/                # Home page sections (HeroTitle, WhatWeDeliver, ThreeDBackground)
-│       │   └── ui/                  # Reusable UI components (cards, buttons, stepper, skeleton)
-│       │
-│       ├── pages/                   # Page components (Home, Wings, Portfolio, etc.)
-│       ├── services/
-│       │   ├── contentStorage.ts    # DB-backed content storage (async getters + savers)
-│       │   ├── configStorage.ts     # DB-backed config storage (settings + contact)
-│       │   ├── auth.ts              # Client-side auth service (login, verify, token management)
-│       │   └── linkStorage.ts       # Link center localStorage service
-│       │
-│       ├── lib/
-│       │   ├── router.tsx           # Next.js routing compat shim (Link, useNavigate, useSearchParams, etc.)
-│       │   └── utils.ts             # cn() utility (clsx + tailwind-merge)
-│       │
-│       ├── data/                    # Seed data files (used ONLY by scripts/seed-db.ts)
-│       ├── types.ts                 # TypeScript interfaces (Wing, Project, TeamMember, etc.)
-│       ├── utils/                   # Link utilities (slug generation, URL validation)
-│       └── styles/                  # CSS files (cyberpunk button, loader, tectonic logo)
-│
-├── prisma/
-│   └── schema.prisma                # Prisma schema (22 models, PostgreSQL)
-│
-├── scripts/
-│   └── seed-db.ts                   # Database seed script (Prisma-based)
-│
-├── public/                          # Static assets (images, logos)
-│
-├── next.config.ts                   # Next.js config (security headers, CSP)
-├── tailwind.config.ts               # Tailwind config
-├── eslint.config.mjs                # ESLint config
-├── tsconfig.json                    # TypeScript config
-├── package.json                     # Dependencies + scripts
-├── .env.example                     # Environment variable template
-├── .gitignore                       # Git ignore rules
-├── Dockerfile                       # Docker deployment (3-stage build)
-├── docker-compose.yml               # Docker Compose config
-├── vercel.json                      # Vercel deployment config
-├── railway.json                     # Railway deployment config
-├── Procfile                         # Heroku deployment config
-├── Caddyfile                        # Caddy reverse proxy config
-└── .nvmrc                           # Node version (20)
-```
+### Sitemap & Robots
 
-### Key Mechanisms
-
-#### 1. Content Loading (Batch + Cache)
-
-```
-Page Mount → ContentContext.refreshContent()
-  ↓
-  Check localStorage cache (techtonic_all_content)
-  ↓ Cache hit (< 60s old)?
-  ├── YES → Apply cached data to state → contentLoaded = true → Pages render
-  └── NO  → fetch('/api/content/all')
-              ↓
-              Server: Promise.all([8 Prisma queries]) → JSON response (~16KB)
-              ↓
-              Cache to localStorage → Apply to state → contentLoaded = true
-```
-
-#### 2. Content Saving (Optimistic UI)
-
-```
-Admin edits form → setWings(newData)
-  ↓
-  1. Update React state immediately (optimistic UI)
-  2. Invalidate localStorage cache
-  3. PUT /api/content?type=wings (with admin JWT)
-     ↓
-     Server: requireAdmin(req) → validate → deleteMany → createMany
-     ↓
-  4. setSaveStatus('saved') → UI shows success
-  5. If save fails → setSaveStatus('error') → refreshContent() reloads from DB
-```
-
-#### 3. Authentication Flow
-
-```
-Login page → form submit → authService.login(email, password)
-  ↓
-  POST /api/auth/login (rate-limited: 5 attempts / 15 min)
-  ↓
-  Server: ensureDefaultAdmin() → findUnique(email) → comparePassword(bcrypt)
-  ↓ Success?
-  ├── YES → signToken(user) → store in localStorage → navigate to /dashboard
-  └── NO  → return 401 → show error
-  ↓
-  Subsequent requests: Authorization: Bearer <token>
-  ↓
-  Server: getUserFromRequest(req) → verifyToken(JWT) → check role
-```
-
-#### 4. Routing Shim (src/tectonic/lib/router.tsx)
-
-The Tectonic codebase was originally a Vite + React Router SPA. To work with Next.js App Router without rewriting every component, a thin compatibility shim re-implements the React Router API on top of Next.js primitives:
-
-| React Router | Next.js Shim | Backed By |
-|--------------|-------------|-----------|
-| `<Link to>` | `<Link>` | `next/link` |
-| `useNavigate()` | `useNavigate()` | `next/navigation` `useRouter` |
-| `useLocation()` | `useLocation()` | `next/navigation` `usePathname` |
-| `useSearchParams()` | `useSearchParams()` | History API + custom events |
-| `useParams()` | `useParams()` | `next/navigation` |
-| `<Navigate to>` | `<Navigate>` | `useRouter().push/replace` |
-
-The shim dispatches a custom `SEARCH_PARAMS_EVENT` after every navigation so `useSearchParams` picks up URL changes from client-side `next/link` clicks (which don't trigger `popstate`).
-
-### NPM Scripts
-
-| Script | Description |
-|--------|-------------|
-| `bun run dev` | Start dev server (port 3000, with `prisma generate` via `predev`) |
-| `bun run build` | Production build (with `prisma generate` via `prebuild`) |
-| `bun run start` | Start production server (with `prisma generate` via `prestart`) |
-| `bun run lint` | Run ESLint |
-| `bun run seed:db` | Seed the database with initial content |
-| `bun run db:push` | Push Prisma schema to database |
-| `bun run db:generate` | Generate Prisma client |
-
-### Environment Variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `DATABASE_URL` | ✅ | PostgreSQL connection string (Neon pooled) |
-| `JWT_SECRET` | ✅ | JWT signing secret (min 32 chars, fail-fast in production) |
-| `INITIAL_ADMIN_PASSWORD` | Optional | Initial admin password (auto-generated if not set) |
+- **sitemap.ts:** Dynamic — includes static pages, portfolio projects, industries, service pages
+- **robots.ts:** Dynamic — allows `/`, disallows `/dashboard`, `/login`, `/api/`
 
 ---
 
 ## Deployment
 
-### Z.ai (Publish Button)
-
-The Z.ai system runs `bun run dev` on port 3000. The `Caddyfile` proxies external traffic to localhost:3000. Environment variables are read from `.env`.
-
-### Vercel
-
-1. Import the repository on Vercel
-2. Set environment variables: `DATABASE_URL`, `JWT_SECRET`
-3. Deploy — `vercel.json` handles the rest (Bun-based build)
-
-### Docker (AWS / Google Cloud / Azure)
+### Vercel (Recommended)
 
 ```bash
-docker build -t tectonic .
-docker run -p 3000:3000 \
-  -e DATABASE_URL=postgresql://... \
-  -e JWT_SECRET=your_secret \
-  tectonic
+bun install -g vercel
+vercel --prod
 ```
 
-Or with Docker Compose:
+Set environment variables in Vercel Dashboard.
+
+### Docker
 
 ```bash
-# Set DATABASE_URL and JWT_SECRET in your shell, then:
-docker compose up --build
+docker build -t techtonic .
+docker run -p 3000:3000 techtonic
 ```
 
-### Railway
-
-Connect the repo → Railway auto-detects `railway.json` → set env vars → deploy.
-
-### Heroku
+### Self-Hosted
 
 ```bash
-heroku create
-heroku config:set DATABASE_URL=... JWT_SECRET=...
-git push heroku main
+bun run build
+bun run start
+```
+
+Use Caddy/Nginx as reverse proxy.
+
+---
+
+## Development
+
+### Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `bun run dev` | Start dev server on port 3000 |
+| `bun run build` | Production build |
+| `bun run start` | Start production server |
+| `bun run lint` | ESLint |
+| `bun run db:push` | Push schema to database |
+| `bun run db:generate` | Generate Prisma client |
+| `bun run db:migrate` | Run migrations |
+| `bun run db:reset` | Reset database |
+| `bun run seed:db` | Seed admin + sample data |
+| `bun run seed:sections` | Seed 33 section visibility records |
+
+### Code Conventions
+
+- All tectonic/ components are `"use client"` (SPA pattern)
+- Page files are server components (for `generateMetadata`)
+- Client wrappers bridge server → client rendering
+- Content managed via `useContent()` context (single source of truth)
+- Auth tokens stored in `localStorage` as `techtonic_auth_token`
+- API calls use Bearer token authentication
+- CSS variables for theming (`--bg`, `--surface`, `--text`, `--brand`)
+- Glassmorphism + claymorphism design system
+
+### Git Workflow
+
+```bash
+# Feature branch
+git checkout -b feature/my-feature
+git add .
+git commit -m "feat: description"
+git push origin feature/my-feature
+
+# Merge to main
+git checkout main
+git merge feature/my-feature
+git push origin main
 ```
 
 ---
 
 ## License
 
-Proprietary software. All rights reserved.
-
----
-
-## Team
-
-| Name | Role |
-|------|------|
-| Kazi Ahammad Ullah | Co-Founder & CEO |
-| Alahi Majnur Osama | Co-Founder & COO |
-| Tajwar Saiyeed Abid | Co-Founder & CTO |
-| MD. Tahmidul Alam Ahad | Co-Founder & CMO |
-
----
-
-<p align="center">
-  <strong>TECHTONIC</strong> — Architecting Tomorrow
-</p>
+Proprietary — Techtonic Enterprise. All rights reserved.
