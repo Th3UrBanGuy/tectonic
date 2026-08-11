@@ -25,7 +25,6 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
     "react-compiler/react-compiler": "off",
     
     // Next.js rules
-    "@next/next/no-img-element": "off",
     "@next/next/no-html-link-for-pages": "off",
     
     // General JavaScript rules

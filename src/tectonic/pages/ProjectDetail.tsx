@@ -1,6 +1,9 @@
+"use client";
+
 import React from 'react';
 import { useParams, useNavigate } from '@/tectonic/lib/router';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import {
     ArrowLeft, ExternalLink, Github, FileText,
     Terminal, Layers, Cpu, Globe, CheckCircle2
@@ -70,9 +73,12 @@ const ProjectDetail = () => {
                     >
                         <div className="absolute -inset-1 bg-gradient-to-r from-brand-500 to-purple-600 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
                         <div className="relative rounded-[2.2rem] overflow-hidden border border-white/10 ring-1 ring-white/5">
-                            <img
+                            <Image
                                 src={project.image}
                                 alt={project.title}
+                                width={800}
+                                height={600}
+                                sizes="(max-width: 1024px) 100vw, 50vw"
                                 className="w-full h-auto object-cover transform transition duration-500 group-hover:scale-105"
                             />
                         </div>

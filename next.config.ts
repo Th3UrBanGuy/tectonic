@@ -19,7 +19,21 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  reactStrictMode: false,
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "fiverr-res.cloudinary.com" },
+      { protocol: "https", hostname: "techostudios.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "via.placeholder.com" },
+      { protocol: "https", hostname: "ui-avatars.com" },
+      { protocol: "https", hostname: "smashresume.com" },
+      { protocol: "https", hostname: "img.freepik.com" },
+      { protocol: "https", hostname: "miro.medium.com" },
+      { protocol: "https", hostname: "mir-s3-cdn-cf.behance.net" },
+      { protocol: "https", hostname: "static.vecteezy.com" },
+    ],
+  },
   // Security headers applied to ALL routes
   async headers() {
     return [

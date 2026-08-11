@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Inter, Orbitron } from "next/font/google";
+import { Inter, Orbitron, Montserrat } from "next/font/google";
 import "./globals.css";
 import AppShell from "@/components/AppShell";
+import JsonLd from "@/components/JsonLd";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -16,8 +17,21 @@ const orbitron = Orbitron({
   weight: ["400", "500", "700", "900"],
 });
 
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["700"],
+});
+
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://tect0nic.com";
+
 export const metadata: Metadata = {
-  title: "Techtonic | Architecting Tomorrow",
+  title: {
+    default: "Techtonic | Architecting Tomorrow",
+    template: "%s | Techtonic",
+  },
   description:
     "Techtonic is a modern enterprise platform showcasing software development, robotics & automation, and consultancy services. Architecting Tomorrow's Infrastructure.",
   keywords: [
@@ -33,16 +47,41 @@ export const metadata: Metadata = {
   icons: {
     icon: "/logo-dark.png",
   },
+  metadataBase: new URL(siteUrl),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Techtonic | Architecting Tomorrow",
     description: "Architecting Tomorrow's Infrastructure",
     siteName: "Techtonic",
     type: "website",
+    url: siteUrl,
+    images: [
+      {
+        url: "/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "Techtonic - Architecting Tomorrow",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Techtonic | Architecting Tomorrow",
     description: "Architecting Tomorrow's Infrastructure",
+    images: ["/og-default.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
@@ -71,8 +110,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className={`${inter.variable} ${orbitron.variable} antialiased`}
+        className={`${inter.variable} ${orbitron.variable} ${montserrat.variable} antialiased`}
       >
+        <JsonLd />
         <AppShell>{children}</AppShell>
       </body>
     </html>

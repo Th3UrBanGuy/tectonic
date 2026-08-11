@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Search, ArrowLeft, Paperclip, MoreVertical, Phone, Video, Check, CheckCheck, Plus, Trash2, X } from 'lucide-react';

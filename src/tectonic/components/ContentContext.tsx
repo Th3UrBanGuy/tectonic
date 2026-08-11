@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import * as contentStorage from '../services/contentStorage';
 import * as configStorage from '../services/configStorage';
@@ -22,6 +23,8 @@ interface ContentContextType {
     setTechStack: (items: TechStackItem[]) => void;
     roadmap: RoadmapItem[];
     setRoadmap: (items: RoadmapItem[]) => void;
+    companyStats: any[];
+    setCompanyStats: (items: any[]) => void;
     homeContent: any;
     setHomeContent: (content: any) => void;
     companyContent: any;
@@ -30,11 +33,17 @@ interface ContentContextType {
     setPortfolioContent: (content: any) => void;
     innovationContent: any;
     setInnovationContent: (content: any) => void;
+    certificationGallery: any[];
+    setCertificationGallery: (items: any[]) => void;
     siteSettings: configStorage.SiteSettings;
     setSiteSettings: (settings: configStorage.SiteSettings) => void;
     contactConfig: configStorage.ContactConfig;
     setContactConfig: (config: configStorage.ContactConfig) => void;
+    sections: { page: string; section: string; label: string; visible: boolean; order: number }[];
+    setSections: (sections: { page: string; section: string; label: string; visible: boolean; order: number }[]) => void;
+    isSectionVisible: (page: string, section: string) => boolean;
     refreshContent: () => void;
+    forceRefreshContent: () => Promise<void>;
     saveStatus: 'idle' | 'saving' | 'saved' | 'error';
     contentLoaded: boolean;
 }
@@ -57,11 +66,13 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const [projects, setProjectsState] = useState<any[]>([]);
     const [techStack, setTechStackState] = useState<TechStackItem[]>([]);
     const [roadmap, setRoadmapState] = useState<RoadmapItem[]>([]);
+    const [companyStats, setCompanyStatsState] = useState<any[]>([]);
 
     const [homeContent, setHomeContentState] = useState<any>({});
     const [companyContent, setCompanyContentState] = useState<any>({});
     const [portfolioContent, setPortfolioContentState] = useState<any>({});
     const [innovationContent, setInnovationContentState] = useState<any>({});
+    const [certificationGallery, setCertificationGalleryState] = useState<any[]>([]);
 
     const [siteSettings, setSiteSettingsState] = useState<configStorage.SiteSettings>({
         siteName: 'Techtonic',
@@ -78,6 +89,12 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const [contentLoaded, setContentLoaded] = useState(false);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+    const [sections, setSectionsState] = useState<{ page: string; section: string; label: string; visible: boolean; order: number }[]>([]);
+
+    const isSectionVisible = useCallback((page: string, section: string) => {
+        const s = sections.find((s) => s.page === page && s.section === section);
+        return s ? s.visible : true; // default visible if not found
+    }, [sections]);
 
     // Apply cached data to state (instant — from localStorage)
     const applyData = useCallback((data: any) => {
@@ -89,12 +106,15 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setProjectsState(data.projects || []);
         setTechStackState(data.techStack || []);
         setRoadmapState(data.roadmap || []);
+        setCompanyStatsState(data.companyStats || []);
         setHomeContentState(data.homeContent || {});
         setCompanyContentState(data.companyContent || {});
         setPortfolioContentState(data.portfolioContent || {});
         setInnovationContentState(data.companyContent?.innovation || {});
         if (data.siteSettings) setSiteSettingsState(data.siteSettings);
         if (data.contactConfig) setContactConfigState(data.contactConfig);
+        if (data.sections) setSectionsState(data.sections);
+        if (data.certificationGallery) setCertificationGalleryState(data.certificationGallery);
         setContentLoaded(true);
     }, []);
 
@@ -147,6 +167,31 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     useEffect(() => {
         refreshContent();
     }, [refreshContent]);
+
+    // Auto-refresh when user switches back to this tab (picks up admin changes)
+    useEffect(() => {
+        const handleVisibility = () => {
+            if (document.visibilityState === 'visible') {
+                try { localStorage.removeItem(CACHE_KEY); } catch {}
+                refreshContent();
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibility);
+        return () => document.removeEventListener('visibilitychange', handleVisibility);
+    }, [refreshContent]);
+
+    // Force refresh — bypasses cache, always fetches from DB
+    const forceRefreshContent = useCallback(async () => {
+        try { localStorage.removeItem(CACHE_KEY); } catch {}
+        try {
+            const res = await fetch('/api/content/all');
+            if (res.ok) {
+                const data = await res.json();
+                try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch {}
+                applyData(data);
+            }
+        } catch {}
+    }, [applyData]);
 
     // --- Wrapped Setters (Update State + Persist to DB + invalidate cache) ---
 
@@ -262,6 +307,56 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setSaveStatus(ok ? 'saved' : 'error');
     };
 
+    const setSections = async (newSections: { page: string; section: string; label: string; visible: boolean; order: number }[]) => {
+        setSectionsState(newSections);
+        invalidateCache();
+        setSaveStatus('saving');
+        try {
+            const token = localStorage.getItem('techtonic_auth_token');
+            const res = await fetch('/api/content?type=sections', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                body: JSON.stringify({ type: 'sections', data: newSections }),
+            });
+            setSaveStatus(res.ok ? 'saved' : 'error');
+        } catch {
+            setSaveStatus('error');
+        }
+    };
+
+    const setCertificationGallery = async (newItems: any[]) => {
+        setCertificationGalleryState(newItems);
+        invalidateCache();
+        setSaveStatus('saving');
+        try {
+            const res = await fetch('/api/certification-gallery', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: newItems }),
+            });
+            setSaveStatus(res.ok ? 'saved' : 'error');
+        } catch {
+            setSaveStatus('error');
+        }
+    };
+
+    const setCompanyStats = async (newStats: any[]) => {
+        setCompanyStatsState(newStats);
+        invalidateCache();
+        setSaveStatus('saving');
+        try {
+            const token = localStorage.getItem('techtonic_auth_token');
+            const res = await fetch('/api/content', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                body: JSON.stringify({ type: 'companyStats', data: newStats }),
+            });
+            setSaveStatus(res.ok ? 'saved' : 'error');
+        } catch {
+            setSaveStatus('error');
+        }
+    };
+
     return (
         <ContentContext.Provider value={{
             wings, setWings,
@@ -271,13 +366,16 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
             projects, setProjects,
             techStack, setTechStack,
             roadmap, setRoadmap,
+            companyStats, setCompanyStats,
             homeContent, setHomeContent,
             companyContent, setCompanyContent,
             portfolioContent, setPortfolioContent,
             innovationContent, setInnovationContent,
             siteSettings, setSiteSettings,
             contactConfig, setContactConfig,
-            refreshContent,
+            sections, setSections, isSectionVisible,
+            certificationGallery, setCertificationGallery,
+            refreshContent, forceRefreshContent,
             saveStatus,
             contentLoaded,
         }}>

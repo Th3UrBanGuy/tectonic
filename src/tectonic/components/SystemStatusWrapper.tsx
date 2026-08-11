@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from 'react';
 import Maintenance from '../pages/Maintenance';
 import SystemOffline from '../pages/SystemOffline';

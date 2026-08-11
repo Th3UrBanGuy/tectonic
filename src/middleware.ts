@@ -13,17 +13,35 @@ import jwt from "jsonwebtoken";
 function getJwtSecret(): string {
   const secret = process.env.JWT_SECRET;
   if (secret && secret.length >= 32) return secret;
-  // Dev fallback
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("FATAL: JWT_SECRET must be set and >= 32 chars in production");
+  }
   return "tectonic_dev_secret_change_in_production_min_32_chars_long";
 }
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Protect /dashboard route
-  if (pathname.startsWith("/dashboard")) {
+  // Public paths that never need auth
+  const publicPaths = ["/api/contact", "/api/content", "/api/og", "/api/go"];
+  const isPublicApi = publicPaths.some((p) => pathname.startsWith(p)) && req.method === "GET";
+  const isContactPost = pathname.startsWith("/api/contact") && req.method === "POST";
+
+  if (isPublicApi || isContactPost) {
+    return NextResponse.next();
+  }
+
+  // Protect /dashboard and admin API routes
+  // Note: /api/content has its own route-level requireAdmin() checks — don't double-block here
+  const needsAuth =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/api/auth/users") ||
+    pathname.startsWith("/api/auth/change-password") ||
+    pathname.startsWith("/api/links") ||
+    pathname.startsWith("/api/contact/");
+
+  if (needsAuth) {
     // For page navigations (text/html), let the client-side ProtectedRoute handle auth
-    // The middleware can't read localStorage tokens
     if (req.headers.get("accept")?.includes("text/html")) {
       return NextResponse.next();
     }
@@ -54,5 +72,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/api/:path*"],
 };

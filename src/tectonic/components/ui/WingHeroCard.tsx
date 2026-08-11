@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Zap, Award, TrendingUp } from 'lucide-react';
 
 interface WingHeroCardProps {
@@ -69,13 +70,19 @@ const WingHeroCard: React.FC<WingHeroCardProps> = ({
 
                     {/* Logo Container - Responsive sizing */}
                     <div className="relative w-40 h-40 sm:w-56 sm:h-56 lg:w-72 lg:h-72 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl border-2 sm:border-4 border-white/20 backdrop-blur-sm">
-                        <motion.img
-                            src={teamLogo}
-                            alt={teamName}
-                            className="w-full h-full object-contain drop-shadow-2xl"
+                        <motion.div
                             whileHover={{ scale: 1.05, rotate: 2 }}
                             transition={{ duration: 0.3 }}
-                        />
+                            className="relative w-full h-full"
+                        >
+                            <Image
+                                src={teamLogo}
+                                alt={teamName}
+                                fill
+                                sizes="(max-width: 1024px) 16rem, 18rem"
+                                className="object-contain drop-shadow-2xl"
+                            />
+                        </motion.div>
                     </div>
                 </motion.div>
 

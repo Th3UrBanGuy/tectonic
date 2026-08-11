@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useMotionTemplate, useMotionValue, animate } from 'framer-motion';
 import { Power, RefreshCcw, WifiOff } from 'lucide-react';

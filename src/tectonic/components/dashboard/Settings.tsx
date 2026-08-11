@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Bell, Palette, Shield, Trash2, Camera, Save, Key, Globe, Clock, Monitor, Moon, Sun, Smartphone, LogOut, Download, AlertTriangle, Settings as SettingsIcon, CheckCircle, MapPin, Phone, Mail, Facebook, Linkedin, Twitter, Instagram, Github } from 'lucide-react';

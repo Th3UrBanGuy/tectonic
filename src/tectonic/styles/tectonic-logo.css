@@ -10,7 +10,7 @@
     background-color: #000000;
     border: 2px solid #000000;
     border-radius: 100px;
-    padding: 4px 16px;
+    padding: 3px 14px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -30,7 +30,7 @@ html:not(.dark) .tectonic-pill {
 }
 
 .tectonic-main-text {
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-orbitron), sans-serif;
     font-weight: 900;
     font-size: 13px;
     margin: 0;
@@ -52,17 +52,20 @@ html:not(.dark) .tectonic-main-text {
 }
 
 .tectonic-subtext-container {
-    margin-top: 2px;
+    margin-top: 0px;
+    line-height: 1;
 }
 
 .tectonic-subtext {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-montserrat), sans-serif;
     font-weight: 700;
     font-size: 6px;
     margin: 0;
+    padding: 0;
     text-transform: uppercase;
     letter-spacing: 0.3px;
     transition: color 0.3s ease;
+    line-height: 1;
 }
 
 /* Dark mode subtext - white */

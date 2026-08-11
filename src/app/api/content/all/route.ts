@@ -15,7 +15,8 @@ export async function GET() {
     // Run ALL queries in parallel — Prisma handles connection pooling
     const [
       wings, projects, team, partnerships, timeline,
-      techStack, roadmap, settingsRows,
+      techStack, roadmap, settingsRows, sections, certGallery,
+      companyStats,
     ] = await Promise.all([
       db.wing.findMany({ orderBy: { id: "asc" } }),
       db.project.findMany({ orderBy: { id: "asc" } }),
@@ -25,6 +26,9 @@ export async function GET() {
       db.techEcosystem.findMany({ orderBy: { orderIndex: "asc" } }),
       db.roadmapItem.findMany({ orderBy: { orderIndex: "asc" } }),
       db.siteSetting.findMany(),
+      db.sectionVisibility.findMany({ orderBy: { order: "asc" } }),
+      db.certificationGallery.findMany({ orderBy: { orderIndex: "asc" } }),
+      db.companyStat.findMany({ orderBy: { orderIndex: "asc" } }),
     ]);
 
     // Parse settings into a key-value object
@@ -126,6 +130,39 @@ export async function GET() {
 
       // System status
       systemStatus: settings.system_status || "live",
+
+      // Section visibility (CMS on/off)
+      sections: sections.map((s) => ({
+        page: s.page,
+        section: s.section,
+        label: s.label,
+        visible: s.visible,
+        order: s.order,
+      })),
+
+      // Company Stats (from dedicated table)
+      companyStats: companyStats.map((s) => ({
+        id: String(s.id),
+        label: s.label,
+        value: s.value,
+        suffix: s.suffix || "",
+        iconName: s.iconName || "TrendingUp",
+        orderIndex: s.orderIndex || 0,
+      })),
+
+      // Certification Gallery
+      certificationGallery: certGallery.map((c) => ({
+        id: String(c.id),
+        title: c.title,
+        issuer: c.issuer || "",
+        date: c.date ? new Date(c.date).toISOString().split("T")[0] : "",
+        description: c.description || "",
+        imageUrl: c.imageUrl || "",
+        link: c.link || "",
+        category: c.category || "certification",
+        orderIndex: c.orderIndex || 0,
+        isActive: c.isActive !== false,
+      })),
 
       // Timestamp for cache validation
       fetchedAt: Date.now(),

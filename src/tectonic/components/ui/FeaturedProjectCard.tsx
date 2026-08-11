@@ -1,5 +1,7 @@
+"use client";
 import React from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { useNavigate } from '@/tectonic/lib/router';
 import { cn } from '../../lib/utils';
 import { Globe, ArrowRight } from 'lucide-react';
@@ -49,13 +51,19 @@ const FeaturedProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => 
             <div className="relative h-full rounded-3xl border border-slate-200/60 dark:border-gray-700/50 bg-white dark:bg-gray-900 overflow-hidden cursor-pointer group-hover:shadow-2xl transition-all duration-500">
                 {/* Image section with parallax effect */}
                 <div className="relative h-40 overflow-hidden">
-                    <motion.img
+                    <motion.div
                         whileHover={{ scale: 1.1 }}
                         transition={{ duration: 0.6 }}
-                        src={project.image}
-                        alt={project.title}
-                        className="w-full h-full object-cover"
-                    />
+                        className="w-full h-full"
+                    >
+                        <Image
+                            src={project.image}
+                            alt={project.title}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="object-cover"
+                        />
+                    </motion.div>
 
                     {/* Gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>

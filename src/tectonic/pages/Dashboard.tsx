@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import DashboardLayout from '../components/dashboard/DashboardLayout';
 import Overview from '../components/dashboard/Overview';
@@ -7,6 +9,9 @@ import MemberList from '../components/dashboard/MemberList';
 import Inquiries from '../components/dashboard/Inquiries';
 import ContentManagement from '../components/dashboard/ContentManagement';
 import Settings from '../components/dashboard/Settings';
+import SEOManager from '../components/dashboard/SEOManager';
+import DocsPanel from '../components/dashboard/DocsPanel';
+import SectionVisibilityManager from '../components/dashboard/SectionVisibilityManager';
 import { useAuth } from '../components/AuthContext';
 import { useNavigate } from '../lib/router';
 
@@ -32,6 +37,9 @@ const Dashboard = () => {
       {activeTab === 'members' && <MemberList />}
       {activeTab === 'contact' && <Inquiries />}
       {activeTab === 'content' && <ContentManagement />}
+      {activeTab === 'visibility' && <SectionVisibilityManager />}
+      {activeTab === 'seo' && <SEOManager />}
+      {activeTab === 'docs' && <DocsPanel />}
       {activeTab === 'settings' && <Settings />}
     </DashboardLayout>
   );

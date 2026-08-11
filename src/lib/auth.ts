@@ -58,8 +58,8 @@ export function verifyToken(token: string): (jwt.JwtPayload & AuthUser) | null {
 // Bump cost factor to 12 (OWASP recommendation)
 export async function hashPassword(password: string): Promise<string> {
   // Validate password strength
-  if (password.length < 6) {
-    throw new Error("Password must be at least 6 characters");
+  if (password.length < 8) {
+    throw new Error("Password must be at least 8 characters");
   }
   const salt = await bcrypt.genSalt(12);
   return bcrypt.hash(password, salt);
@@ -101,8 +101,7 @@ export async function ensureDefaultAdmin(): Promise<void> {
   });
 
   if (isProd) {
-    console.log(`[SECURITY] Default admin created. Password: ${initialPassword}`);
-    console.log("[SECURITY] CHANGE THIS PASSWORD IMMEDIATELY after first login.");
+    console.log("[SECURITY] Default admin created. Set INITIAL_ADMIN_PASSWORD env var or change password on first login.");
   }
 }
 
@@ -157,7 +156,10 @@ export function sanitizeString(input: string, maxLength: number = 1000): string 
 }
 
 export function validatePassword(password: string): { valid: boolean; error?: string } {
-  if (password.length < 6) return { valid: false, error: "Password must be at least 6 characters" };
+  if (password.length < 8) return { valid: false, error: "Password must be at least 8 characters" };
   if (password.length > 128) return { valid: false, error: "Password must be at most 128 characters" };
+  if (!/[A-Z]/.test(password)) return { valid: false, error: "Password must contain at least 1 uppercase letter" };
+  if (!/[a-z]/.test(password)) return { valid: false, error: "Password must contain at least 1 lowercase letter" };
+  if (!/[0-9]/.test(password)) return { valid: false, error: "Password must contain at least 1 number" };
   return { valid: true };
 }

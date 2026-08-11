@@ -1,9 +1,9 @@
+"use client";
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { motion } from 'framer-motion';
 import { Activity, Users, Globe, Shield, Zap, Link2, Mail, Briefcase, Layers } from 'lucide-react';
 import { useContent } from '../ContentContext';
-import { getAllLinks } from '../../services/linkStorage';
 import { getToken } from '../../services/auth';
 
 const StatCard = ({ title, value, icon: Icon, color, delay }: any) => (
@@ -34,19 +34,21 @@ const Overview = () => {
     const [userCount, setUserCount] = useState(0);
 
     useEffect(() => {
-        // Link stats from localStorage
-        const links = getAllLinks();
-        setLinkCount(links.length);
-        setTotalVisits(links.reduce((sum, l) => sum + l.currentVisits, 0));
-
-        // Inquiry + user counts from API
+        // Fetch all stats in parallel
         const fetchStats = async () => {
             try {
                 const token = getToken();
-                const [inquiryRes, userRes] = await Promise.all([
+                const [linkRes, inquiryRes, userRes] = await Promise.all([
+                    fetch('/api/links'),
                     fetch('/api/contact', { headers: { Authorization: `Bearer ${token}` } }),
                     fetch('/api/auth/users', { headers: { Authorization: `Bearer ${token}` } }),
                 ]);
+                if (linkRes.ok) {
+                    const data = await linkRes.json();
+                    const links = data.data || [];
+                    setLinkCount(links.length);
+                    setTotalVisits(links.reduce((sum: number, l: any) => sum + (l.currentVisits || 0), 0));
+                }
                 if (inquiryRes.ok) {
                     const data = await inquiryRes.json();
                     const subs = data.submissions || [];

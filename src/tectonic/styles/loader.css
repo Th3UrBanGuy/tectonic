@@ -12,12 +12,65 @@
     top: 0;
     left: 0;
     z-index: 9999;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.5s ease;
+    overflow: hidden;
 }
 
 /* Dark mode background */
 html.dark .logo-loader-container {
     background-color: #0a0a0a;
+}
+
+/* Subtle radial glow behind everything */
+.logo-loader-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(20, 184, 166, 0.07) 0%, rgba(139, 92, 246, 0.03) 40%, transparent 70%);
+    pointer-events: none;
+    animation: loaderGlow 4s ease-in-out infinite;
+}
+html.dark .logo-loader-container::before {
+    background: radial-gradient(circle, rgba(20, 184, 166, 0.1) 0%, rgba(139, 92, 246, 0.04) 40%, transparent 70%);
+}
+
+@keyframes loaderGlow {
+    0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+}
+
+/* Animated gradient line under pill */
+.logo-loader-container::after {
+    content: '';
+    position: absolute;
+    bottom: calc(50% - 60px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #14b8a6, #8b5cf6, #14b8a6, transparent);
+    background-size: 200% 100%;
+    animation: loaderLine 1.5s ease-out 1.2s forwards, loaderLineFlow 3s linear 2.5s infinite;
+    border-radius: 2px;
+}
+html.dark .logo-loader-container::after {
+    background: linear-gradient(90deg, transparent, #2dd4bf, #a78bfa, #2dd4bf, transparent);
+    background-size: 200% 100%;
+}
+
+@keyframes loaderLine {
+    0% { width: 0; opacity: 0; }
+    100% { width: 200px; opacity: 1; }
+}
+
+@keyframes loaderLineFlow {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
 .logo-pill-container {
@@ -29,16 +82,103 @@ html.dark .logo-loader-container {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 0 0 0 rgba(20, 184, 166, 0);
     will-change: width, transform, box-shadow;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.5s ease, box-shadow 0.5s ease;
+    position: relative;
 }
 
-/* Dark mode pill - white border with dark background */
+/* Premium glass shimmer — first pass */
+.logo-pill-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 80%;
+    height: 100%;
+    background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(255, 255, 255, 0.05) 30%,
+        rgba(255, 255, 255, 0.18) 45%,
+        rgba(255, 255, 255, 0.05) 55%,
+        transparent 70%
+    );
+    animation: pillShimmer1 1s ease-out 0.9s forwards;
+    pointer-events: none;
+}
+
+/* Premium glass shimmer — second pass (delayed, subtle) */
+.logo-pill-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        105deg,
+        transparent 30%,
+        rgba(20, 184, 166, 0.08) 45%,
+        rgba(255, 255, 255, 0.12) 50%,
+        rgba(20, 184, 166, 0.08) 55%,
+        transparent 70%
+    );
+    animation: pillShimmer2 1.2s ease-out 1.4s forwards;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes pillShimmer1 {
+    0% { left: -150%; }
+    100% { left: 250%; }
+}
+
+@keyframes pillShimmer2 {
+    0% { left: -150%; }
+    100% { left: 250%; }
+}
+
+/* Dark mode pill — glass border */
 html.dark .logo-pill-container {
     background-color: #0a0a0a;
-    border: 2px solid #ffffff;
-    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    box-shadow:
+        0 4px 12px rgba(255, 255, 255, 0.1),
+        0 0 0 0 rgba(20, 184, 166, 0),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Dark mode shimmer — brighter */
+html.dark .logo-pill-container::after {
+    background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(255, 255, 255, 0.03) 30%,
+        rgba(255, 255, 255, 0.12) 45%,
+        rgba(255, 255, 255, 0.03) 55%,
+        transparent 70%
+    );
+}
+html.dark .logo-pill-container::before {
+    background: linear-gradient(
+        105deg,
+        transparent 30%,
+        rgba(45, 212, 191, 0.1) 45%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(45, 212, 191, 0.1) 55%,
+        transparent 70%
+    );
+}
+
+/* Light mode pill — subtle inner highlight */
+html:not(.dark) .logo-pill-container {
+    border: 2px solid #000000;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .logo-text-overflow {
@@ -48,17 +188,17 @@ html.dark .logo-pill-container {
 
 .logo-main-text {
     color: #FFFFFF;
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-orbitron), sans-serif;
     font-weight: 900;
     font-size: 42px;
     margin: 0;
     letter-spacing: 3px;
     text-transform: uppercase;
     line-height: 1;
-    transition: color 0.3s ease;
+    transition: color 0.5s ease;
 }
 
-/* Dark mode text - dark text on white border */
+/* Dark mode text */
 html.dark .logo-main-text {
     color: #ffffff;
 }
@@ -70,13 +210,13 @@ html.dark .logo-main-text {
 
 .logo-subtext {
     color: #000000;
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-montserrat), sans-serif;
     font-weight: 700;
     font-size: 15px;
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    transition: color 0.3s ease;
+    transition: color 0.5s ease;
 }
 
 /* Dark mode subtext */
@@ -111,6 +251,15 @@ html.dark .logo-subtext {
     .logo-subtext {
         font-size: 10px;
         letter-spacing: 1px;
+    }
+
+    .logo-loader-container::after {
+        bottom: calc(50% - 45px);
+    }
+
+    @keyframes loaderLine {
+        0% { width: 0; opacity: 0; }
+        100% { width: 140px; opacity: 1; }
     }
 
     @keyframes expandPill {

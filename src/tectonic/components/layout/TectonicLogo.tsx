@@ -1,22 +1,25 @@
 import React from 'react';
 
-const TectonicLogo = () => {
+interface TectonicLogoProps {
+    compact?: boolean;
+}
+
+const TectonicLogo: React.FC<TectonicLogoProps> = ({ compact = false }) => {
+    if (compact) {
+        return (
+            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-cyan-500 shadow-lg shadow-brand-500/25">
+                <span className="text-white text-sm font-black">T</span>
+            </div>
+        );
+    }
+
     return (
         <div className="tectonic-logo-container">
-            <style>
-                {`
-          @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Montserrat:wght@700&display=swap');
-        `}
-            </style>
-
-            {/* Pill Container */}
             <div className="tectonic-pill">
-                <h1 className="tectonic-main-text">TECTONIC</h1>
+                <span className="tectonic-main-text">TECTONIC</span>
             </div>
-
-            {/* Subtext */}
             <div className="tectonic-subtext-container">
-                <h2 className="tectonic-subtext">FOUNDATION OF FUTURE</h2>
+                <span className="tectonic-subtext">FOUNDATION OF FUTURE</span>
             </div>
         </div>
     );

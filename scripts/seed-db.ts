@@ -25,6 +25,7 @@ import { CONTACT_INFO } from "../src/tectonic/data/pages/contact";
 import { HOME_CONTENT } from "../src/tectonic/data/pages/home";
 import { COMPANY_CONTENT, COMPANY_ACHIEVEMENTS } from "../src/tectonic/data/pages/company";
 import { PORTFOLIO_CONTENT } from "../src/tectonic/data/pages/portfolio";
+import { INDUSTRIES, SERVICE_PAGES } from "../src/tectonic/data/pseo";
 
 // ── Prisma client ───────────────────────────────────────────────────────
 const db = new PrismaClient({
@@ -225,6 +226,80 @@ async function main() {
   }
   console.log(`  ✓ ${socials.length} social platforms seeded`);
 
+  // 11. Programmatic SEO — Industries & Service Pages
+  console.log("\n🔍 Seeding pSEO industries & service pages...");
+  await db.servicePage.deleteMany();
+  await db.industry.deleteMany();
+
+  for (let i = 0; i < INDUSTRIES.length; i++) {
+    const ind = INDUSTRIES[i];
+    await db.industry.create({
+      data: {
+        slug: ind.slug,
+        name: ind.name,
+        description: ind.description,
+        metaTitle: ind.metaTitle,
+        metaDescription: ind.metaDescription,
+        icon: ind.icon,
+        orderIndex: i,
+      },
+    });
+  }
+  console.log(`  ✓ ${INDUSTRIES.length} industries created`);
+
+  let servicePageCount = 0;
+  for (const [, page] of Object.entries(SERVICE_PAGES)) {
+    await db.servicePage.create({
+      data: {
+        industrySlug: page.industrySlug,
+        serviceSlug: page.serviceSlug,
+        title: page.title,
+        metaTitle: page.metaTitle,
+        metaDescription: page.metaDescription,
+        heroTitle: page.heroTitle,
+        heroSubtitle: page.heroSubtitle,
+        heroDescription: page.heroDescription,
+        bodyContent: page.bodyContent,
+        features: page.features,
+        techStack: page.techStack,
+        ctaText: page.ctaText,
+        ctaLink: page.ctaLink,
+        isActive: true,
+        orderIndex: servicePageCount,
+      },
+    });
+    servicePageCount++;
+  }
+  console.log(`  ✓ ${servicePageCount} service pages created`);
+
+  // ── Section Visibility (CMS on/off) ─────────────────────────────────────
+  console.log("\n── Section Visibility ──");
+  const sections = [
+    { page: "home", section: "hero", label: "Hero Section", order: 0 },
+    { page: "home", section: "deliver", label: "What We Deliver", order: 1 },
+    { page: "home", section: "wings", label: "Our Wings", order: 2 },
+    { page: "home", section: "projects", label: "Featured Projects", order: 3 },
+    { page: "company", section: "hero", label: "Hero Section", order: 0 },
+    { page: "company", section: "stats", label: "Company Stats", order: 1 },
+    { page: "company", section: "mission", label: "Mission & Vision", order: 2 },
+    { page: "company", section: "leadership", label: "Executive Leadership", order: 3 },
+    { page: "company", section: "certifications", label: "Certifications & Awards", order: 4 },
+    { page: "portfolio", section: "hero", label: "Hero Section", order: 0 },
+    { page: "portfolio", section: "projects", label: "Projects Grid", order: 1 },
+    { page: "wings", section: "hero", label: "Hero Section", order: 0 },
+    { page: "wings", section: "grid", label: "Wings Grid", order: 1 },
+    { page: "contact", section: "hero", label: "Hero Section", order: 0 },
+    { page: "contact", section: "form", label: "Contact Form", order: 1 },
+  ];
+  for (const s of sections) {
+    await db.sectionVisibility.upsert({
+      where: { page_section: { page: s.page, section: s.section } },
+      update: { label: s.label, order: s.order },
+      create: { ...s, visible: true },
+    });
+  }
+  console.log(`  ✓ ${sections.length} sections seeded`);
+
   // ── Verify ───────────────────────────────────────────────────────────
   console.log("\n════════════════════════════════════════");
   console.log("VERIFICATION — row counts after seeding:");
@@ -241,6 +316,8 @@ async function main() {
     site_settings: await db.siteSetting.count(),
     social_platforms: await db.socialPlatform.count(),
     contact_submissions: await db.contactSubmission.count(),
+    industries: await db.industry.count(),
+    service_pages: await db.servicePage.count(),
   };
   for (const [table, count] of Object.entries(counts)) {
     console.log(`  ${table}: ${count} rows`);

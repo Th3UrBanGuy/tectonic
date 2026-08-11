@@ -217,6 +217,112 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ data: null });
     }
 
+    // ── Industries ────────────────────────────────────────────────────
+    if (type === "industries") {
+      const rows = await db.industry.findMany({ orderBy: { orderIndex: "asc" } });
+      return NextResponse.json({
+        data: rows.map((i) => ({
+          id: i.slug,
+          slug: i.slug,
+          name: i.name,
+          description: i.description || "",
+          metaTitle: i.metaTitle || "",
+          metaDescription: i.metaDescription || "",
+          icon: i.icon || "Building",
+          orderIndex: i.orderIndex || 0,
+        })),
+      });
+    }
+
+    // ── Service Pages ─────────────────────────────────────────────────
+    if (type === "servicePages") {
+      const rows = await db.servicePage.findMany({ orderBy: { orderIndex: "asc" } });
+      return NextResponse.json({
+        data: rows.map((sp) => ({
+          id: String(sp.id),
+          industrySlug: sp.industrySlug,
+          serviceSlug: sp.serviceSlug,
+          title: sp.title,
+          metaTitle: sp.metaTitle || "",
+          metaDescription: sp.metaDescription || "",
+          heroTitle: sp.heroTitle || "",
+          heroSubtitle: sp.heroSubtitle || "",
+          heroDescription: sp.heroDescription || "",
+          bodyContent: sp.bodyContent || "",
+          features: sp.features || [],
+          techStack: sp.techStack || [],
+          ctaText: sp.ctaText || "",
+          ctaLink: sp.ctaLink || "",
+          imageUrl: sp.imageUrl || "",
+          isActive: sp.isActive !== false,
+          orderIndex: sp.orderIndex || 0,
+        })),
+      });
+    }
+
+    // ── Company Stats ─────────────────────────────────────────────────
+    if (type === "companyStats") {
+      const rows = await db.companyStat.findMany({ orderBy: { orderIndex: "asc" } });
+      return NextResponse.json({
+        data: rows.map((s) => ({
+          id: String(s.id),
+          label: s.label,
+          value: s.value,
+          suffix: s.suffix || "",
+          iconName: s.iconName || "TrendingUp",
+          orderIndex: s.orderIndex || 0,
+        })),
+      });
+    }
+
+    // ── Certifications ────────────────────────────────────────────────
+    if (type === "certifications") {
+      const rows = await db.certification.findMany({ orderBy: { orderIndex: "asc" } });
+      return NextResponse.json({
+        data: rows.map((c) => ({
+          id: String(c.id),
+          name: c.name || "",
+          issuer: c.issuer || "",
+          date: c.date ? new Date(c.date).toISOString().split("T")[0] : "",
+          description: c.description || "",
+          orderIndex: c.orderIndex || 0,
+        })),
+      });
+    }
+
+    // ── Pages (SEO Meta) ──────────────────────────────────────────────
+    if (type === "pages") {
+      const rows = await db.page.findMany();
+      return NextResponse.json({
+        data: rows.map((p) => ({
+          id: String(p.id),
+          routePath: p.routePath,
+          title: p.title,
+          metaTitle: p.metaTitle || "",
+          metaDescription: p.metaDescription || "",
+          heroTitle: p.heroTitle || "",
+          heroSubtitle: p.heroSubtitle || "",
+          heroText: p.heroText || "",
+          heroImageUrl: p.heroImageUrl || "",
+        })),
+      });
+    }
+
+    // ── Section Visibility ──────────────────────────────────────────────
+    if (type === "sections") {
+      const rows = await db.sectionVisibility.findMany({ orderBy: { order: "asc" } });
+      return NextResponse.json({
+        data: rows.map((s) => ({
+          id: String(s.id),
+          page: s.page,
+          section: s.section,
+          label: s.label,
+          visible: s.visible,
+          order: s.order,
+        })),
+      });
+    }
+
     // ── Counts (no type) ──────────────────────────────────────────────
     const [
       wingsCount, projectsCount, teamCount, partnersCount,
@@ -268,7 +374,7 @@ export async function PUT(req: NextRequest) {
   }
 
   // Validate type is one of the allowed values
-  const validTypes = ["wings", "projects", "team", "partnerships", "timeline", "techStack", "roadmap", "settings", "contactConfig", "homeContent", "companyContent", "portfolioContent"];
+  const validTypes = ["wings", "projects", "team", "partnerships", "timeline", "techStack", "roadmap", "settings", "contactConfig", "homeContent", "companyContent", "portfolioContent", "industries", "servicePages", "companyStats", "certifications", "pages", "sections"];
   if (!validTypes.includes(type)) {
     return NextResponse.json({ error: "Invalid content type" }, { status: 400 });
   }
@@ -466,6 +572,129 @@ export async function PUT(req: NextRequest) {
     if (type === "portfolioContent") {
       await upsertSetting("portfolio_content", JSON.stringify(data), "json", "Portfolio page content");
       return NextResponse.json({ success: true });
+    }
+
+    // ── Industries ────────────────────────────────────────────────────
+    if (type === "industries") {
+      await db.industry.deleteMany({});
+      for (let i = 0; i < data.length; i++) {
+        const ind = data[i];
+        await db.industry.create({
+          data: {
+            slug: ind.slug || ind.id || `industry_${Date.now()}_${i}`,
+            name: ind.name || "",
+            description: ind.description || null,
+            metaTitle: ind.metaTitle || null,
+            metaDescription: ind.metaDescription || null,
+            icon: ind.icon || "Building",
+            orderIndex: i,
+          },
+        });
+      }
+      return NextResponse.json({ success: true, count: data.length });
+    }
+
+    // ── Service Pages ─────────────────────────────────────────────────
+    if (type === "servicePages") {
+      await db.servicePage.deleteMany({});
+      for (let i = 0; i < data.length; i++) {
+        const sp = data[i];
+        await db.servicePage.create({
+          data: {
+            industrySlug: sp.industrySlug || "",
+            serviceSlug: sp.serviceSlug || "",
+            title: sp.title || "",
+            metaTitle: sp.metaTitle || null,
+            metaDescription: sp.metaDescription || null,
+            heroTitle: sp.heroTitle || null,
+            heroSubtitle: sp.heroSubtitle || null,
+            heroDescription: sp.heroDescription || null,
+            bodyContent: sp.bodyContent || null,
+            features: sp.features || [],
+            techStack: sp.techStack || [],
+            ctaText: sp.ctaText || null,
+            ctaLink: sp.ctaLink || null,
+            imageUrl: sp.imageUrl || null,
+            isActive: sp.isActive !== false,
+            orderIndex: i,
+          },
+        });
+      }
+      return NextResponse.json({ success: true, count: data.length });
+    }
+
+    // ── Company Stats ─────────────────────────────────────────────────
+    if (type === "companyStats") {
+      await db.companyStat.deleteMany({});
+      for (let i = 0; i < data.length; i++) {
+        const s = data[i];
+        await db.companyStat.create({
+          data: {
+            label: s.label || "",
+            value: s.value || "",
+            suffix: s.suffix || null,
+            iconName: s.iconName || "TrendingUp",
+            orderIndex: i,
+          },
+        });
+      }
+      return NextResponse.json({ success: true, count: data.length });
+    }
+
+    // ── Certifications ────────────────────────────────────────────────
+    if (type === "certifications") {
+      await db.certification.deleteMany({});
+      for (let i = 0; i < data.length; i++) {
+        const c = data[i];
+        await db.certification.create({
+          data: {
+            name: c.name || "",
+            issuer: c.issuer || null,
+            date: c.date ? new Date(c.date) : null,
+            description: c.description || null,
+            orderIndex: i,
+          },
+        });
+      }
+      return NextResponse.json({ success: true, count: data.length });
+    }
+
+    // ── Pages (SEO Meta) ──────────────────────────────────────────────
+    if (type === "pages") {
+      await db.page.deleteMany({});
+      for (const p of data) {
+        await db.page.create({
+          data: {
+            routePath: p.routePath || "/",
+            title: p.title || "",
+            metaTitle: p.metaTitle || null,
+            metaDescription: p.metaDescription || null,
+            heroTitle: p.heroTitle || null,
+            heroSubtitle: p.heroSubtitle || null,
+            heroText: p.heroText || null,
+            heroImageUrl: p.heroImageUrl || null,
+          },
+        });
+      }
+      return NextResponse.json({ success: true, count: data.length });
+    }
+
+    // ── Section Visibility (toggle on/off) ──────────────────────────────
+    if (type === "sections") {
+      for (const s of data) {
+        await db.sectionVisibility.upsert({
+          where: { page_section: { page: s.page, section: s.section } },
+          update: { visible: s.visible, label: s.label, order: s.order ?? 0 },
+          create: {
+            page: s.page,
+            section: s.section,
+            label: s.label || "",
+            visible: s.visible ?? true,
+            order: s.order ?? 0,
+          },
+        });
+      }
+      return NextResponse.json({ success: true, count: data.length });
     }
 
     return NextResponse.json({ error: `Unknown type: ${type}` }, { status: 400 });

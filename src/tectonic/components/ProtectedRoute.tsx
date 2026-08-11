@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { Navigate, useLocation } from '@/tectonic/lib/router';
 import { useAuth } from './AuthContext';

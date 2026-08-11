@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from '@/tectonic/lib/router';
-import { ArrowRight, Linkedin, Facebook, Instagram, Twitter, Github, Globe } from 'lucide-react';
+import { Linkedin, Facebook, Instagram, Twitter, Github, Globe } from 'lucide-react';
 import TectonicLogo from './TectonicLogo';
 import { useContent } from '../ContentContext';
 
 const Footer = () => {
-  const { wings, contactConfig } = useContent();
+  const { wings, contactConfig, isSectionVisible } = useContent();
   const displayWings = wings;
   const contactInfo = contactConfig && contactConfig.contact && contactConfig.contact.email ? contactConfig : { address: { street: '', sector: '', coordinates: '' }, contact: { email: '', phone: '' }, socials: {} };
   const socials = contactInfo.socials || {};
@@ -16,6 +16,8 @@ const Footer = () => {
     twitter: Twitter,
     github: Github
   };
+
+  if (!isSectionVisible('layout', 'footer')) return null;
 
   return (
     <footer className="bg-slate-50 dark:bg-black border-t border-slate-200 dark:border-gray-800 py-12 px-6 relative overflow-hidden transition-colors duration-500">
@@ -29,64 +31,76 @@ const Footer = () => {
             Architecting the substrate of the future through integrated software, security, and robotic solutions.
           </p>
         </div>
-        <div>
-          <h3 className="font-bold mb-4 text-slate-900 dark:text-white">Ecosystem</h3>
-          <ul className="space-y-2 text-sm text-slate-600 dark:text-gray-400">
-            {displayWings.map((wing) => (
-              <li key={wing.id}>
-                <Link
-                  to={`/wings?id=${wing.id}`}
-                  className={`hover:${wing.color.replace('text-', 'text-').replace('-500', '-600')} dark:hover:${wing.color} transition-colors`}
-                >
-                  {wing.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h3 className="font-bold mb-4 text-slate-900 dark:text-white">Company</h3>
-          <ul className="space-y-2 text-sm text-slate-600 dark:text-gray-400">
-            <li><Link to="/company" className="hover:text-slate-900 dark:hover:text-white transition-colors">About Us</Link></li>
-            <li><Link to="/portfolio" className="hover:text-slate-900 dark:hover:text-white transition-colors">Case Studies</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="font-bold mb-4 text-slate-900 dark:text-white">Connect</h3>
-          <p className="text-sm text-slate-600 dark:text-gray-400 mb-4">
-            HQ: {contactInfo.address.street}, {contactInfo.address.sector}
-          </p>
-          <div className="flex flex-col space-y-2 mb-6">
-            <a href={`mailto:${contactInfo.contact.email}`} className="text-sm text-slate-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors flex items-center gap-2">
-              <span className="font-semibold text-slate-900 dark:text-white">Email:</span> {contactInfo.contact.email}
-            </a>
-            <a href={`https://wa.me/${contactInfo.contact.phone}`} className="text-sm text-slate-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors flex items-center gap-2">
-              <span className="font-semibold text-slate-900 dark:text-white">Phone:</span> {contactInfo.contact.phone}
-            </a>
-          </div>
 
-          <div className="flex gap-3">
-            {Object.entries(contactInfo.socials).map(([platform, link]) => {
-              const Icon = socialIcons[platform] || Globe;
-              return (
-                <a
-                  key={platform}
-                  href={link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-200 dark:bg-gray-800 text-slate-600 dark:text-gray-400 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-600 transition-all"
-                  aria-label={platform}
-                >
-                  <Icon size={16} />
-                </a>
-              );
-            })}
+        {isSectionVisible('layout', 'footerEcosystem') && (
+          <div>
+            <h3 className="font-bold mb-4 text-slate-900 dark:text-white">Ecosystem</h3>
+            <ul className="space-y-2 text-sm text-slate-600 dark:text-gray-400">
+              {displayWings.map((wing) => (
+                <li key={wing.id}>
+                  <Link
+                    to={`/wings?id=${wing.id}`}
+                    className={`hover:${wing.color.replace('text-', 'text-').replace('-500', '-600')} dark:hover:${wing.color} transition-colors`}
+                  >
+                    {wing.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
+        )}
+
+        {isSectionVisible('layout', 'footerCompany') && (
+          <div>
+            <h3 className="font-bold mb-4 text-slate-900 dark:text-white">Company</h3>
+            <ul className="space-y-2 text-sm text-slate-600 dark:text-gray-400">
+              <li><Link to="/company" className="hover:text-slate-900 dark:hover:text-white transition-colors">About Us</Link></li>
+              <li><Link to="/portfolio" className="hover:text-slate-900 dark:hover:text-white transition-colors">Case Studies</Link></li>
+            </ul>
+          </div>
+        )}
+
+        {isSectionVisible('layout', 'footerConnect') && (
+          <div>
+            <h3 className="font-bold mb-4 text-slate-900 dark:text-white">Connect</h3>
+            <p className="text-sm text-slate-600 dark:text-gray-400 mb-4">
+              HQ: {contactInfo.address.street}, {contactInfo.address.sector}
+            </p>
+            <div className="flex flex-col space-y-2 mb-6">
+              <a href={`mailto:${contactInfo.contact.email}`} className="text-sm text-slate-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors flex items-center gap-2">
+                <span className="font-semibold text-slate-900 dark:text-white">Email:</span> {contactInfo.contact.email}
+              </a>
+              <a href={`https://wa.me/${contactInfo.contact.phone}`} className="text-sm text-slate-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors flex items-center gap-2">
+                <span className="font-semibold text-slate-900 dark:text-white">Phone:</span> {contactInfo.contact.phone}
+              </a>
+            </div>
+
+            <div className="flex gap-3">
+              {Object.entries(contactInfo.socials).map(([platform, link]) => {
+                const Icon = socialIcons[platform] || Globe;
+                return (
+                  <a
+                    key={platform}
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-200 dark:bg-gray-800 text-slate-600 dark:text-gray-400 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-600 transition-all"
+                    aria-label={platform}
+                  >
+                    <Icon size={16} />
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {isSectionVisible('layout', 'footerCopyright') && (
+        <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-slate-200 dark:border-gray-800 text-center text-xs text-slate-500 dark:text-gray-600">
+          &copy; {new Date().getFullYear()} Techtonic Industries. All rights reserved.
         </div>
-      </div>
-      <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-slate-200 dark:border-gray-800 text-center text-xs text-slate-500 dark:text-gray-600">
-        &copy; {new Date().getFullYear()} Techtonic Industries. All rights reserved.
-      </div>
+      )}
     </footer>
   );
 };
