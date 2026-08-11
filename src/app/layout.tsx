@@ -108,6 +108,9 @@ const themeScript = `
 })();
 `;
 
+// Ahrefs Analytics — only loads if NEXT_PUBLIC_AHREFS_ANALYTICS_KEY is set
+const ahrefsKey = process.env.NEXT_PUBLIC_AHREFS_ANALYTICS_KEY || "";
+
 // Google Analytics gtag.js — only loads if NEXT_PUBLIC_GOOGLE_ANALYTICS_ID is set
 const googleAnalyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || "";
 const gtagScript = googleAnalyticsId
@@ -133,6 +136,9 @@ export default function RootLayout({
             <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`} />
             <script dangerouslySetInnerHTML={{ __html: gtagScript }} />
           </>
+        )}
+        {ahrefsKey && (
+          <script src="https://analytics.ahrefs.com/analytics.js" data-key={ahrefsKey} async />
         )}
       </head>
       <body
