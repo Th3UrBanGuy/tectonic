@@ -43,11 +43,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const [projects, industries, servicePages] = await Promise.all([
       db.project.findMany({
-        select: { slug: true, updatedAt: true },
+        select: { slug: true, updatedAt: true, imageUrl: true, title: true },
         orderBy: { id: "asc" },
       }),
       db.industry.findMany({
-        select: { slug: true },
+        select: { slug: true, updatedAt: true },
         orderBy: { orderIndex: "asc" },
       }),
       db.servicePage.findMany({
@@ -56,6 +56,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           industrySlug: true,
           serviceSlug: true,
           updatedAt: true,
+          imageUrl: true,
+          title: true,
         },
         orderBy: { orderIndex: "asc" },
       }),
@@ -66,11 +68,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: p.updatedAt ? new Date(p.updatedAt) : now,
       changeFrequency: "monthly" as const,
       priority: 0.7,
+      images: p.imageUrl ? [p.imageUrl] : undefined,
     }));
 
     const industryPages: MetadataRoute.Sitemap = industries.map((i) => ({
       url: `${BASE_URL}/${i.slug}`,
-      lastModified: now,
+      lastModified: i.updatedAt ? new Date(i.updatedAt) : now,
       changeFrequency: "weekly" as const,
       priority: 0.8,
     }));
@@ -81,6 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: sp.updatedAt ? new Date(sp.updatedAt) : now,
         changeFrequency: "weekly" as const,
         priority: 0.8,
+        images: sp.imageUrl ? [sp.imageUrl] : undefined,
       })
     );
 

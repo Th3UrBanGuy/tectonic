@@ -125,16 +125,21 @@ export default async function ServicePage({ params }: Props) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Service",
+    "@id": `${siteUrl}/${industry}/${service}/#service`,
     name: page.title,
     description: page.heroDescription || page.bodyContent || "",
     provider: {
-      "@type": "Organization",
-      name: "Techtonic",
-      url: siteUrl,
+      "@id": `${siteUrl}/#organization`,
     },
-    areaServed: industryData.name,
+    areaServed: {
+      "@type": "Place",
+      name: industryData.name,
+    },
     serviceType: page.heroTitle || "",
     url: `${siteUrl}/${industry}/${service}`,
+    isPartOf: {
+      "@id": `${siteUrl}/${industry}/#page`,
+    },
   };
 
   const breadcrumbJsonLd = {

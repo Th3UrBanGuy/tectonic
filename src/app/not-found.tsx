@@ -52,8 +52,8 @@ const NotFound = () => {
                 isDark ? 'bg-purple-500/5' : 'bg-cyan-200/15'
             }`} />
 
-            {/* Content */}
-            <div className="relative z-10 text-center px-6 max-w-lg">
+        {/* Content */}
+        <main className="relative z-10 text-center px-6 max-w-lg" role="main">
                 {/* Glitch 404 */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -180,9 +180,9 @@ const NotFound = () => {
                         ERR_PAGE_NOT_FOUND · sector 0x{(404).toString(16).toUpperCase()}
                     </span>
                 </motion.div>
-            </div>
+        </main>
 
-            {/* Bottom gradient line */}
+        {/* Bottom gradient line */}
             <div className={`absolute bottom-0 left-0 right-0 h-px ${
                 isDark
                     ? 'bg-gradient-to-r from-transparent via-brand-500/30 to-transparent'

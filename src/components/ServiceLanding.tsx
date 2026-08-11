@@ -33,7 +33,7 @@ export default function ServiceLanding({
   servicePage,
 }: ServiceLandingProps) {
   return (
-    <div className="min-h-screen bg-white dark:bg-[#050505] text-slate-900 dark:text-white transition-colors duration-500">
+    <article className="min-h-screen bg-white dark:bg-[#050505] text-slate-900 dark:text-white transition-colors duration-500">
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-50/50 to-purple-50/30 dark:from-brand-950/20 dark:to-purple-950/10 pointer-events-none" />
@@ -41,22 +41,22 @@ export default function ServiceLanding({
 
         <div className="max-w-7xl mx-auto relative z-10">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-xs font-mono text-slate-500 dark:text-gray-500 mb-8">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-mono text-slate-500 dark:text-gray-500 mb-8">
             <Link
               href="/"
               className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
             >
               Home
             </Link>
-            <ChevronRight size={12} />
+            <ChevronRight size={12} aria-hidden="true" />
             <Link
               href={`/${industry.slug}`}
               className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
             >
               {industry.name}
             </Link>
-            <ChevronRight size={12} />
-            <span className="text-slate-900 dark:text-white font-bold">
+            <ChevronRight size={12} aria-hidden="true" />
+            <span className="text-slate-900 dark:text-white font-bold" aria-current="page">
               {servicePage.heroTitle}
             </span>
           </nav>
@@ -67,7 +67,7 @@ export default function ServiceLanding({
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500/10 border border-brand-500/20 mb-6"
           >
-            <Cpu size={14} className="text-brand-600 dark:text-brand-400" />
+            <Cpu size={14} className="text-brand-600 dark:text-brand-400" aria-hidden="true" />
             <span className="text-xs font-mono text-brand-600 dark:text-brand-400 uppercase tracking-wider">
               {industry.name}
             </span>
@@ -117,6 +117,7 @@ export default function ServiceLanding({
               <ArrowRight
                 size={18}
                 className="group-hover:translate-x-1 transition-transform"
+                aria-hidden="true"
               />
             </Link>
           </motion.div>
@@ -126,14 +127,16 @@ export default function ServiceLanding({
       {/* Body Content */}
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto">
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-lg text-slate-600 dark:text-gray-400 leading-relaxed"
           >
-            {servicePage.bodyContent}
-          </motion.p>
+            <h2 className="text-2xl font-bold mb-6">Overview</h2>
+            <p className="text-lg text-slate-600 dark:text-gray-400 leading-relaxed">
+              {servicePage.bodyContent}
+            </p>
+          </motion.div>
         </div>
       </section>
 
@@ -149,9 +152,9 @@ export default function ServiceLanding({
             >
               What We Deliver
             </motion.h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 list-none p-0">
               {servicePage.features.map((feature, index) => (
-                <motion.div
+                <motion.li
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -162,13 +165,14 @@ export default function ServiceLanding({
                   <CheckCircle
                     size={20}
                     className="text-brand-600 dark:text-brand-400 mt-0.5 flex-shrink-0"
+                    aria-hidden="true"
                   />
                   <span className="text-slate-700 dark:text-gray-300 font-medium">
                     {feature}
                   </span>
-                </motion.div>
+                </motion.li>
               ))}
-            </div>
+            </ul>
           </div>
         </section>
       )}
@@ -185,9 +189,9 @@ export default function ServiceLanding({
             >
               Technology Stack
             </motion.h2>
-            <div className="flex flex-wrap justify-center gap-3">
+            <ul className="flex flex-wrap justify-center gap-3 list-none p-0">
               {servicePage.techStack.map((tech, index) => (
-                <motion.div
+                <motion.li
                   key={index}
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -196,9 +200,9 @@ export default function ServiceLanding({
                   className="px-6 py-3 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm font-mono text-slate-700 dark:text-gray-300 hover:border-brand-500/50 transition-colors"
                 >
                   {tech}
-                </motion.div>
+                </motion.li>
               ))}
-            </div>
+            </ul>
           </div>
         </section>
       )}
@@ -238,11 +242,12 @@ export default function ServiceLanding({
               <ArrowRight
                 size={18}
                 className="group-hover:translate-x-1 transition-transform"
+                aria-hidden="true"
               />
             </Link>
           </motion.div>
         </div>
       </section>
-    </div>
+    </article>
   );
 }

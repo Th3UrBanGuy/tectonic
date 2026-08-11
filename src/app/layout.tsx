@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, Orbitron, Montserrat } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -51,6 +52,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   alternates: {
     canonical: "/",
+    languages: {
+      "en-US": "/",
+    },
   },
   openGraph: {
     title: "Techtonic | Architecting Tomorrow",
@@ -58,9 +62,10 @@ export const metadata: Metadata = {
     siteName: "Techtonic",
     type: "website",
     url: siteUrl,
+    locale: "en_US",
     images: [
       {
-        url: "/og-default.png",
+        url: `${siteUrl}/og-default.png`,
         width: 1200,
         height: 630,
         alt: "Techtonic - Architecting Tomorrow",
@@ -71,7 +76,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Techtonic | Architecting Tomorrow",
     description: "Architecting Tomorrow's Infrastructure",
-    images: ["/og-default.png"],
+    images: [`${siteUrl}/og-default.png`],
   },
   robots: {
     index: true,
@@ -108,19 +113,8 @@ const themeScript = `
 })();
 `;
 
-// Ahrefs Analytics — only loads if NEXT_PUBLIC_AHREFS_ANALYTICS_KEY is set
-const ahrefsKey = process.env.NEXT_PUBLIC_AHREFS_ANALYTICS_KEY || "";
-
-// Google Analytics gtag.js — only loads if NEXT_PUBLIC_GOOGLE_ANALYTICS_ID is set
 const googleAnalyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || "";
-const gtagScript = googleAnalyticsId
-  ? `
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '${googleAnalyticsId}');
-  `
-  : "";
+const ahrefsKey = process.env.NEXT_PUBLIC_AHREFS_ANALYTICS_KEY || "";
 
 export default function RootLayout({
   children,
@@ -131,15 +125,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        {googleAnalyticsId && (
-          <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`} />
-            <script dangerouslySetInnerHTML={{ __html: gtagScript }} />
-          </>
-        )}
-        {ahrefsKey && (
-          <script src="https://analytics.ahrefs.com/analytics.js" data-key={ahrefsKey} async />
-        )}
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://analytics.ahrefs.com" />
       </head>
       <body
         className={`${inter.variable} ${orbitron.variable} ${montserrat.variable} antialiased`}
@@ -147,6 +134,33 @@ export default function RootLayout({
         <JsonLd />
         <AppShell>{children}</AppShell>
         <SpeedInsights />
+
+        {/* Google Analytics — loaded after interactive to avoid main thread blocking */}
+        {googleAnalyticsId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${googleAnalyticsId}', { send_page_view: false });
+              `}
+            </Script>
+          </>
+        )}
+
+        {/* Ahrefs Analytics — loaded after interactive */}
+        {ahrefsKey && (
+          <Script
+            src="https://analytics.ahrefs.com/analytics.js"
+            data-key={ahrefsKey}
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   );

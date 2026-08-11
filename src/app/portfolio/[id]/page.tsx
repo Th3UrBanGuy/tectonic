@@ -98,22 +98,23 @@ export default async function ProjectDetailPage({ params }: Props) {
       projectJsonLd = {
         "@context": "https://schema.org",
         "@type": "Article",
+        "@id": `${siteUrl}/portfolio/${id}/#article`,
         headline: project.title,
         description: project.challengeDesc || project.solutionDesc || "",
         image: project.imageUrl || undefined,
         datePublished: project.completionDate?.toISOString() || new Date().toISOString(),
         dateModified: project.updatedAt?.toISOString() || new Date().toISOString(),
         author: {
-          "@type": "Organization",
-          name: "Techtonic",
+          "@id": `${siteUrl}/#organization`,
         },
         publisher: {
-          "@type": "Organization",
-          name: "Techtonic",
-          logo: {
-            "@type": "ImageObject",
-            url: `${siteUrl}/logo-dark.png`,
-          },
+          "@id": `${siteUrl}/#organization`,
+        },
+        isPartOf: {
+          "@id": `${siteUrl}/#website`,
+        },
+        mainEntity: {
+          "@id": `${siteUrl}/portfolio/${id}/#article`,
         },
       };
     }

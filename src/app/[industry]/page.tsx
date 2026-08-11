@@ -103,13 +103,15 @@ export default async function IndustryIndexPage({ params }: Props) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
+    "@id": `${siteUrl}/${industry}/#page`,
     name: `${industryData.name} Solutions`,
     description: industryData.description || `Software solutions for ${industryData.name}`,
     url: `${siteUrl}/${industry}`,
     isPartOf: {
-      "@type": "WebSite",
-      name: "Techtonic",
-      url: siteUrl,
+      "@id": `${siteUrl}/#website`,
+    },
+    about: {
+      "@id": `${siteUrl}/#organization`,
     },
     mainEntity: {
       "@type": "ItemList",
