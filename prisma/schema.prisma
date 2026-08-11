@@ -18,6 +18,7 @@ model User {
   passwordHash String    @map("password_hash")
   name         String?
   role         String?   @default("admin")
+  avatarUrl    String?   @map("avatar_url")
   isActive     Boolean?  @default(true) @map("is_active")
   lastLogin    DateTime? @map("last_login")
   createdAt    DateTime? @default(now()) @map("created_at")

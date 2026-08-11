@@ -89,6 +89,8 @@ prisma/migrations/dev.db*
 upload/
 download/
 tool-results/
+public/uploads/avatars/
+public/uploads/certifications/
 
 # ─── AI / Development Worklog (contains credentials & internal notes) ──────
 worklog.md

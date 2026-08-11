@@ -260,43 +260,70 @@ export const saveInnovationContent = (content: any): boolean => saveToStorage(ST
 //  BULK OPERATIONS
 // ═══════════════════════════════════════════════════════════════════════
 
-export const exportAllContent = (): string => {
-    return JSON.stringify({
-        techStack: getTechStack(),
-        roadmap: getRoadmap(),
-        projects: getProjects(),
-        wings: getWings(),
-        team: getTeam(),
-        timeline: getTimeline(),
-        partnerships: getPartnerships(),
-        homeContent: getHomeContent(),
-        companyContent: getCompanyContent(),
-        portfolioContent: getPortfolioContent(),
-    }, null, 2);
+export const exportAllContent = async (): Promise<string> => {
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('techtonic_auth_token') : null;
+    const res = await fetch('/api/content/all', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!res.ok) return '{}';
+    const json = await res.json();
+    return JSON.stringify(json.data, null, 2);
 };
 
-export const importAllContent = (jsonData: string): boolean => {
+export const importAllContent = async (jsonData: string): Promise<boolean> => {
     try {
         const data = JSON.parse(jsonData);
-        if (data.techStack) saveTechStack(data.techStack);
-        if (data.roadmap) saveRoadmap(data.roadmap);
-        if (data.projects) saveProjects(data.projects);
-        if (data.wings) saveWings(data.wings);
-        if (data.team) saveTeam(data.team);
-        if (data.timeline) saveTimeline(data.timeline);
-        if (data.partnerships) savePartnerships(data.partnerships);
-        if (data.homeContent) saveHomeContent(data.homeContent);
-        if (data.companyContent) saveCompanyContent(data.companyContent);
-        if (data.portfolioContent) savePortfolioContent(data.portfolioContent);
+        const token = typeof localStorage !== 'undefined' ? localStorage.getItem('techtonic_auth_token') : null;
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (token) headers.Authorization = `Bearer ${token}`;
+
+        const types = [
+            'techStack', 'roadmap', 'projects', 'wings', 'team',
+            'timeline', 'partnerships', 'homeContent', 'companyContent',
+            'portfolioContent',
+        ];
+
+        for (const type of types) {
+            if (data[type]) {
+                await fetch(`/api/content?type=${type}`, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify({ data: data[type] }),
+                });
+            }
+        }
         return true;
     } catch {
         return false;
     }
 };
 
-export const resetToDefaults = (): boolean => {
+export const resetToDefaults = async (): Promise<boolean> => {
     try {
-        Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+        const token = typeof localStorage !== 'undefined' ? localStorage.getItem('techtonic_auth_token') : null;
+        const headers: Record<string, string> = {};
+        if (token) headers.Authorization = `Bearer ${token}`;
+
+        const defaults = {
+            techStack: [],
+            roadmap: [],
+            projects: [],
+            wings: [],
+            team: [],
+            timeline: [],
+            partnerships: [],
+            homeContent: {},
+            companyContent: {},
+            portfolioContent: {},
+        };
+
+        for (const [type, data] of Object.entries(defaults)) {
+            await fetch(`/api/content?type=${type}`, {
+                method: 'PUT',
+                headers: { ...headers, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data }),
+            });
+        }
         return true;
     } catch {
         return false;

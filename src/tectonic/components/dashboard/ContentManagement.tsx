@@ -18,26 +18,38 @@ import CompanyStatsManager from './CompanyStatsManager';
 import TimelineManager from './TimelineManager';
 import IndustriesManager from './IndustriesManager';
 import CertificationGalleryManager from './CertificationGalleryManager';
+import SiteSettingsManager from './SiteSettingsManager';
 import { useContent } from '../ContentContext';
 import { exportAllContent, importAllContent, resetToDefaults } from '../../services/contentStorage';
 
 type SettingsTab =
     | 'innovation' | 'portfolio' | 'wings' | 'team'
     | 'partnerships' | 'portfolioContent' | 'homeContent' | 'companyContent'
-    | 'certifications' | 'certGallery' | 'stats' | 'timeline' | 'industries';
+    | 'certifications' | 'certGallery' | 'stats' | 'timeline' | 'industries'
+    | 'siteSettings';
 
 const ContentManagement: React.FC = () => {
     const [activeTab, setActiveTab] = useState<SettingsTab>('innovation');
+    const [exporting, setExporting] = useState(false);
+    const [importing, setImporting] = useState(false);
+    const [resetting, setResetting] = useState(false);
 
-    const handleExport = () => {
-        const data = exportAllContent();
-        const blob = new Blob([data], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `techtonic-content-${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
+    const handleExport = async () => {
+        setExporting(true);
+        try {
+            const data = await exportAllContent();
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `techtonic-content-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch {
+            alert('Failed to export content.');
+        } finally {
+            setExporting(false);
+        }
     };
 
     const handleImport = () => {
@@ -48,13 +60,19 @@ const ContentManagement: React.FC = () => {
             const file = (e.target as HTMLInputElement).files?.[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (event) => {
+                reader.onload = async (event) => {
                     const content = event.target?.result as string;
-                    if (importAllContent(content)) {
-                        alert('Content imported successfully! Refresh the page to see changes.');
-                        window.location.reload();
-                    } else {
-                        alert('Failed to import content. Please check the file format.');
+                    setImporting(true);
+                    try {
+                        const success = await importAllContent(content);
+                        if (success) {
+                            alert('Content imported successfully! Refreshing...');
+                            window.location.reload();
+                        } else {
+                            alert('Failed to import content. Please check the file format.');
+                        }
+                    } finally {
+                        setImporting(false);
                     }
                 };
                 reader.readAsText(file);
@@ -63,11 +81,17 @@ const ContentManagement: React.FC = () => {
         input.click();
     };
 
-    const handleReset = () => {
+    const handleReset = async () => {
         if (confirm('Are you sure you want to reset all content to defaults? This cannot be undone.')) {
-            if (resetToDefaults()) {
-                alert('Content reset to defaults! Refresh the page to see changes.');
-                window.location.reload();
+            setResetting(true);
+            try {
+                const success = await resetToDefaults();
+                if (success) {
+                    alert('Content reset to defaults! Refreshing...');
+                    window.location.reload();
+                }
+            } finally {
+                setResetting(false);
             }
         }
     };
@@ -86,6 +110,7 @@ const ContentManagement: React.FC = () => {
         { id: 'homeContent' as SettingsTab, label: 'Home Content', icon: Home },
         { id: 'companyContent' as SettingsTab, label: 'Company Content', icon: Building2 },
         { id: 'portfolioContent' as SettingsTab, label: 'Portfolio Content', icon: FileText },
+        { id: 'siteSettings' as SettingsTab, label: 'Site Settings', icon: SettingsIcon },
     ];
 
     return (
@@ -99,14 +124,14 @@ const ContentManagement: React.FC = () => {
 
                 {/* Action Buttons */}
                 <div className="flex gap-2 bg-white dark:bg-white/5 p-1 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none">
-                    <button onClick={handleExport} title="Export Content" className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                    <button onClick={handleExport} disabled={exporting} title="Export Content" className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors disabled:opacity-50">
                         <Download size={18} />
                     </button>
-                    <button onClick={handleImport} title="Import Content" className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                    <button onClick={handleImport} disabled={importing} title="Import Content" className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors disabled:opacity-50">
                         <Upload size={18} />
                     </button>
                     <div className="w-px bg-slate-200 dark:bg-white/10 my-1 mx-1"></div>
-                    <button onClick={handleReset} title="Reset to Defaults" className="p-2 hover:bg-red-50 dark:hover:bg-red-500/20 rounded-lg text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors">
+                    <button onClick={handleReset} disabled={resetting} title="Reset to Defaults" className="p-2 hover:bg-red-50 dark:hover:bg-red-500/20 rounded-lg text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors disabled:opacity-50">
                         <Database size={18} />
                     </button>
                 </div>
@@ -155,6 +180,7 @@ const ContentManagement: React.FC = () => {
                 {activeTab === 'homeContent' && <HomeContentEditor />}
                 {activeTab === 'companyContent' && <CompanyContentEditor />}
                 {activeTab === 'portfolioContent' && <PortfolioContentEditor />}
+                {activeTab === 'siteSettings' && <SiteSettingsManager />}
             </motion.div>
         </div>
     );

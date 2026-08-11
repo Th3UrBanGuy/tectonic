@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Orbitron, Montserrat } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import AppShell from "@/components/AppShell";
 import JsonLd from "@/components/JsonLd";
@@ -83,6 +84,14 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  verification: {
+    ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+      : {}),
+    ...(process.env.NEXT_PUBLIC_AHREFS_SITE_VERIFICATION
+      ? { other: { "ahrefs-site-verification": process.env.NEXT_PUBLIC_AHREFS_SITE_VERIFICATION } }
+      : {}),
+  },
 };
 
 // Apply the persisted theme before hydration to avoid a flash of the wrong theme.
@@ -99,6 +108,17 @@ const themeScript = `
 })();
 `;
 
+// Google Analytics gtag.js — only loads if NEXT_PUBLIC_GOOGLE_ANALYTICS_ID is set
+const googleAnalyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || "";
+const gtagScript = googleAnalyticsId
+  ? `
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${googleAnalyticsId}');
+  `
+  : "";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -108,12 +128,19 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {googleAnalyticsId && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`} />
+            <script dangerouslySetInnerHTML={{ __html: gtagScript }} />
+          </>
+        )}
       </head>
       <body
         className={`${inter.variable} ${orbitron.variable} ${montserrat.variable} antialiased`}
       >
         <JsonLd />
         <AppShell>{children}</AppShell>
+        <SpeedInsights />
       </body>
     </html>
   );

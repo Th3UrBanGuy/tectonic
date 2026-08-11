@@ -132,12 +132,34 @@ export default async function ServicePage({ params }: Props) {
       name: "Techtonic",
       url: siteUrl,
     },
-    areaServed: {
-      "@type": "Industry",
-      name: industryData.name,
-    },
+    areaServed: industryData.name,
     serviceType: page.heroTitle || "",
     url: `${siteUrl}/${industry}/${service}`,
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: siteUrl,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: industryData.name,
+        item: `${siteUrl}/${industry}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: page.title,
+        item: `${siteUrl}/${industry}/${service}`,
+      },
+    ],
   };
 
   return (
@@ -145,6 +167,10 @@ export default async function ServicePage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
       <ServiceLanding
         industry={{

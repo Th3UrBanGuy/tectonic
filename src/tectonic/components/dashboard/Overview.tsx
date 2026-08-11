@@ -34,14 +34,14 @@ const Overview = () => {
     const [userCount, setUserCount] = useState(0);
 
     useEffect(() => {
-        // Fetch all stats in parallel
+        // Fetch all stats in parallel — use /count instead of /users to avoid loading full user list
         const fetchStats = async () => {
             try {
                 const token = getToken();
                 const [linkRes, inquiryRes, userRes] = await Promise.all([
                     fetch('/api/links'),
                     fetch('/api/contact', { headers: { Authorization: `Bearer ${token}` } }),
-                    fetch('/api/auth/users', { headers: { Authorization: `Bearer ${token}` } }),
+                    fetch('/api/auth/count', { headers: { Authorization: `Bearer ${token}` } }),
                 ]);
                 if (linkRes.ok) {
                     const data = await linkRes.json();
@@ -57,7 +57,7 @@ const Overview = () => {
                 }
                 if (userRes.ok) {
                     const data = await userRes.json();
-                    setUserCount((data.users || []).length);
+                    setUserCount(data.count || 0);
                 }
             } catch {
                 // silently ignore — stats just stay 0
@@ -66,15 +66,10 @@ const Overview = () => {
         fetchStats();
     }, []);
 
-    const trafficData = [
-        { name: 'Jan', value: 4000 },
-        { name: 'Feb', value: 3000 },
-        { name: 'Mar', value: 2000 },
-        { name: 'Apr', value: 2780 },
-        { name: 'May', value: 1890 },
-        { name: 'Jun', value: 4390 },
-        { name: 'Jul', value: 3490 },
-    ];
+    // Use real visit data from links instead of fake traffic data
+    const visitData = totalVisits > 0
+        ? [{ name: 'Total', value: totalVisits }]
+        : [{ name: 'No data', value: 0 }];
 
     return (
         <div className="space-y-6 text-slate-900 dark:text-white transition-colors duration-500">
@@ -117,28 +112,34 @@ const Overview = () => {
                 >
                     <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
                         <Activity className="text-brand-500 dark:text-cyan-400" size={18} />
-                        TRAFFIC ANALYTICS
+                        LINK VISITS
                     </h3>
-                    <div className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={trafficData}>
-                                <defs>
-                                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" strokeClass="stroke-slate-200 dark:stroke-slate-700" vertical={false} />
-                                <XAxis dataKey="name" strokeClass="stroke-slate-400 dark:stroke-slate-500" axisLine={false} tickLine={false} />
-                                <YAxis strokeClass="stroke-slate-400 dark:stroke-slate-500" axisLine={false} tickLine={false} />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', color: '#f8fafc', borderRadius: '8px' }}
-                                    itemStyle={{ color: '#06b6d4' }}
-                                />
-                                <Area type="monotone" dataKey="value" stroke="#06b6d4" strokeWidth={2} fillOpacity={1} fill="url(#colorValue)" />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
+                    {totalVisits > 0 ? (
+                        <div className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={visitData}>
+                                    <defs>
+                                        <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" strokeClass="stroke-slate-200 dark:stroke-slate-700" vertical={false} />
+                                    <XAxis dataKey="name" strokeClass="stroke-slate-400 dark:stroke-slate-500" axisLine={false} tickLine={false} />
+                                    <YAxis strokeClass="stroke-slate-400 dark:stroke-slate-500" axisLine={false} tickLine={false} />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', color: '#f8fafc', borderRadius: '8px' }}
+                                        itemStyle={{ color: '#06b6d4' }}
+                                    />
+                                    <Area type="monotone" dataKey="value" stroke="#06b6d4" strokeWidth={2} fillOpacity={1} fill="url(#colorValue)" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-center h-[300px] text-slate-400 dark:text-slate-600 text-sm">
+                            No visit data yet. Create short links to start tracking.
+                        </div>
+                    )}
                 </motion.div>
 
                 <motion.div
@@ -163,7 +164,7 @@ const Overview = () => {
                             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                             <div>
                                 <p className="text-xs text-slate-600 dark:text-slate-300 font-semibold dark:font-mono">Database Connected</p>
-                                <p className="text-[10px] text-slate-400 dark:text-slate-500">SQLite — responsive</p>
+                                <p className="text-[10px] text-slate-400 dark:text-slate-500">PostgreSQL — responsive</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 dark:bg-white/5 dark:border-white/5 dark:hover:bg-white/10 transition-colors">

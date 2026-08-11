@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import IndustryPageClient from "./IndustryPageClient";
+import { safeJsonLd } from "@/lib/utils-jsonld";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://tect0nic.com";
@@ -99,21 +100,74 @@ export default async function IndustryIndexPage({ params }: Props) {
     notFound();
   }
 
-  return (
-    <IndustryPageClient
-      industry={{
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `${industryData.name} Solutions`,
+    description: industryData.description || `Software solutions for ${industryData.name}`,
+    url: `${siteUrl}/${industry}`,
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Techtonic",
+      url: siteUrl,
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      name: `${industryData.name} Services`,
+      numberOfItems: servicePages.length,
+      itemListElement: servicePages.map((p, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `${siteUrl}/${industry}/${p.serviceSlug}`,
+        name: p.title,
+      })),
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: siteUrl,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
         name: industryData.name,
-        slug: industryData.slug,
-        description: industryData.description || "",
-      }}
-      servicePages={servicePages.map((p) => ({
-        slug: p.serviceSlug,
-        title: p.title,
-        heroTitle: p.heroTitle || p.title,
-        heroSubtitle: p.heroSubtitle || "",
-        heroDescription: p.heroDescription || "",
-        ctaLink: `/${industry}/${p.serviceSlug}`,
-      }))}
-    />
+        item: `${siteUrl}/${industry}`,
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
+      />
+      <IndustryPageClient
+        industry={{
+          name: industryData.name,
+          slug: industryData.slug,
+          description: industryData.description || "",
+        }}
+        servicePages={servicePages.map((p) => ({
+          slug: p.serviceSlug,
+          title: p.title,
+          heroTitle: p.heroTitle || p.title,
+          heroSubtitle: p.heroSubtitle || "",
+          heroDescription: p.heroDescription || "",
+          ctaLink: `/${industry}/${p.serviceSlug}`,
+        }))}
+      />
+    </>
   );
 }

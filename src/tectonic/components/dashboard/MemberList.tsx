@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Edit2, Trash2, X, Save, UserPlus, RefreshCw, Shield } from 'lucide-react';
 import { getToken } from '../../services/auth';
@@ -10,7 +10,13 @@ interface AdminUser {
     email: string;
     role: string;
     createdAt?: string;
+    avatarUrl?: string;
 }
+
+// Request dedup + cache (30s)
+let lastFetchTime = 0;
+let lastFetchPromise: Promise<AdminUser[]> | null = null;
+const CACHE_DURATION = 30_000;
 
 const MemberList = () => {
     const [members, setMembers] = useState<AdminUser[]>([]);
@@ -20,22 +26,51 @@ const MemberList = () => {
     const [editingMember, setEditingMember] = useState<AdminUser | null>(null);
     const [formData, setFormData] = useState({ name: '', email: '', role: 'admin', password: '' });
     const [saving, setSaving] = useState(false);
+    const mountedRef = useRef(true);
 
-    const fetchMembers = useCallback(async () => {
-        setLoading(true);
-        setError('');
-        try {
-            const res = await fetch('/api/auth/users', {
-                headers: { Authorization: `Bearer ${getToken()}` },
-            });
-            if (!res.ok) throw new Error('Failed to load operatives');
-            const data = await res.json();
-            setMembers(data.users || []);
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
+    useEffect(() => {
+        mountedRef.current = true;
+        return () => { mountedRef.current = false; };
+    }, []);
+
+    const fetchMembers = useCallback(async (force = false) => {
+        const now = Date.now();
+        // Return cached data if fresh enough and not forced
+        if (!force && lastFetchPromise && (now - lastFetchTime) < CACHE_DURATION) {
+            try {
+                const data = await lastFetchPromise;
+                if (mountedRef.current) setMembers(data);
+            } catch {}
+            return;
         }
+
+        if (mountedRef.current) setLoading(true);
+        if (mountedRef.current) setError('');
+
+        const promise = (async () => {
+            try {
+                const res = await fetch('/api/auth/users', {
+                    headers: { Authorization: `Bearer ${getToken()}` },
+                });
+                if (!res.ok) throw new Error('Failed to load operatives');
+                const data = await res.json();
+                const users = (data.users || []) as AdminUser[];
+                if (mountedRef.current) setMembers(users);
+                lastFetchTime = Date.now();
+                lastFetchPromise = Promise.resolve(users);
+                return users;
+            } catch (err: any) {
+                if (mountedRef.current) setError(err.message);
+                lastFetchPromise = null;
+                throw err;
+            } finally {
+                if (mountedRef.current) setLoading(false);
+            }
+        })();
+
+        lastFetchPromise = promise;
+        lastFetchTime = now;
+        try { await promise; } catch {}
     }, []);
 
     useEffect(() => {
@@ -87,7 +122,8 @@ const MemberList = () => {
                 }
             }
             setIsModalOpen(false);
-            fetchMembers();
+            lastFetchTime = 0; // invalidate cache
+            fetchMembers(true);
         } catch (err: any) {
             alert(err.message);
         } finally {
@@ -107,7 +143,8 @@ const MemberList = () => {
                 const err = await res.json().catch(() => ({}));
                 throw new Error(err.error || 'Failed to delete');
             }
-            fetchMembers();
+            lastFetchTime = 0; // invalidate cache
+            fetchMembers(true);
         } catch (err: any) {
             alert(err.message);
         }
@@ -120,7 +157,7 @@ const MemberList = () => {
             {/* Header Actions */}
             <div className="flex justify-between items-center mb-6">
                 <button
-                    onClick={fetchMembers}
+                    onClick={() => fetchMembers(true)}
                     className="flex items-center gap-2 px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors text-sm"
                 >
                     <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />

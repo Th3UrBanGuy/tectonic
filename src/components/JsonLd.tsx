@@ -11,10 +11,25 @@ const organizationSchema = {
   logo: `${siteUrl}/logo-dark.png`,
   description:
     "Modern enterprise platform showcasing software development, robotics & automation, and consultancy services.",
-  sameAs: [],
+  sameAs: [
+    "https://www.linkedin.com/company/tect0nic",
+    "https://www.facebook.com/tect0nic",
+    "https://www.instagram.com/tect0nic",
+    "https://x.com/tect0nic",
+    "https://github.com/Th3UrBanGuy",
+  ],
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer service",
+    email: "tect0nic.official2026@gmail.com",
+    availableLanguage: ["English"],
+  },
+  address: {
+    "@type": "PostalAddress",
+    addressCountry: "BD",
+  },
+  areaServed: {
+    "@type": "World",
   },
 };
 
@@ -32,6 +47,19 @@ const websiteSchema = {
   },
 };
 
+const siteNavigationSchema = {
+  "@context": "https://schema.org",
+  "@type": "SiteNavigationElement",
+  name: ["Home", "Company", "Wings", "Portfolio", "Contact"],
+  url: [
+    `${siteUrl}/`,
+    `${siteUrl}/company`,
+    `${siteUrl}/wings`,
+    `${siteUrl}/portfolio`,
+    `${siteUrl}/contact`,
+  ],
+};
+
 export default function JsonLd() {
   return (
     <>
@@ -42,6 +70,10 @@ export default function JsonLd() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(websiteSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(siteNavigationSchema) }}
       />
     </>
   );

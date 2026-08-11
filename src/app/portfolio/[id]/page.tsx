@@ -89,6 +89,8 @@ export default async function ProjectDetailPage({ params }: Props) {
         solutionDesc: true,
         impactDesc: true,
         imageUrl: true,
+        completionDate: true,
+        updatedAt: true,
       },
     });
 
@@ -99,6 +101,8 @@ export default async function ProjectDetailPage({ params }: Props) {
         headline: project.title,
         description: project.challengeDesc || project.solutionDesc || "",
         image: project.imageUrl || undefined,
+        datePublished: project.completionDate?.toISOString() || new Date().toISOString(),
+        dateModified: project.updatedAt?.toISOString() || new Date().toISOString(),
         author: {
           "@type": "Organization",
           name: "Techtonic",
