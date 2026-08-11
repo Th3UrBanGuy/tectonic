@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSEO('/wings');
   return {
-    title: seo.title || "Wings",
+    title: seo.title || "Wings | Techtonic",
     description: seo.metaDescription || "Explore Techtonic's specialized wings - software development, robotics & automation, security, and consultancy teams driving innovation.",
     alternates: { canonical: "/wings" },
     openGraph: {
