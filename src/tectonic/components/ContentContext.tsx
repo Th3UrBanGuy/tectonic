@@ -58,38 +58,38 @@ const CACHE_TTL = 60 * 1000; // 60 seconds
 // PROVIDER COMPONENT
 // ----------------------------------------------------------------------
 
-export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [wings, setWingsState] = useState<Wing[]>([]);
-    const [team, setTeamState] = useState<TeamMember[]>([]);
-    const [timeline, setTimelineState] = useState<Milestone[]>([]);
-    const [partnerships, setPartnershipsState] = useState<Partnership[]>([]);
-    const [projects, setProjectsState] = useState<any[]>([]);
-    const [techStack, setTechStackState] = useState<TechStackItem[]>([]);
-    const [roadmap, setRoadmapState] = useState<RoadmapItem[]>([]);
-    const [companyStats, setCompanyStatsState] = useState<any[]>([]);
+export const ContentProvider: React.FC<{ children: React.ReactNode; initialData?: any }> = ({ children, initialData }) => {
+    const [wings, setWingsState] = useState<Wing[]>(initialData?.wings || []);
+    const [team, setTeamState] = useState<TeamMember[]>(initialData?.team || []);
+    const [timeline, setTimelineState] = useState<Milestone[]>(initialData?.timeline || []);
+    const [partnerships, setPartnershipsState] = useState<Partnership[]>(initialData?.partnerships || []);
+    const [projects, setProjectsState] = useState<any[]>(initialData?.projects || []);
+    const [techStack, setTechStackState] = useState<TechStackItem[]>(initialData?.techStack || []);
+    const [roadmap, setRoadmapState] = useState<RoadmapItem[]>(initialData?.roadmap || []);
+    const [companyStats, setCompanyStatsState] = useState<any[]>(initialData?.companyStats || []);
 
-    const [homeContent, setHomeContentState] = useState<any>({});
-    const [companyContent, setCompanyContentState] = useState<any>({});
-    const [portfolioContent, setPortfolioContentState] = useState<any>({});
-    const [innovationContent, setInnovationContentState] = useState<any>({});
-    const [certificationGallery, setCertificationGalleryState] = useState<any[]>([]);
+    const [homeContent, setHomeContentState] = useState<any>(initialData?.homeContent || {});
+    const [companyContent, setCompanyContentState] = useState<any>(initialData?.companyContent || {});
+    const [portfolioContent, setPortfolioContentState] = useState<any>(initialData?.portfolioContent || {});
+    const [innovationContent, setInnovationContentState] = useState<any>(initialData?.companyContent?.innovation || {});
+    const [certificationGallery, setCertificationGalleryState] = useState<any[]>(initialData?.certificationGallery || []);
 
-    const [siteSettings, setSiteSettingsState] = useState<configStorage.SiteSettings>({
+    const [siteSettings, setSiteSettingsState] = useState<configStorage.SiteSettings>(initialData?.siteSettings || {
         siteName: 'Techtonic',
         siteTagline: 'Architecting Tomorrow',
         maintenanceMode: false,
         allowRegistration: false,
     });
 
-    const [contactConfig, setContactConfigState] = useState<configStorage.ContactConfig>({
+    const [contactConfig, setContactConfigState] = useState<configStorage.ContactConfig>(initialData?.contactConfig || {
         address: { street: '', sector: '', coordinates: '' },
         contact: { email: '', phone: '' },
         socials: { linkedin: '', facebook: '', instagram: '', twitter: '', github: '' }
     });
 
-    const [contentLoaded, setContentLoaded] = useState(false);
+    const [contentLoaded, setContentLoaded] = useState(!!initialData);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
-    const [sections, setSectionsState] = useState<{ page: string; section: string; label: string; visible: boolean; order: number }[]>([]);
+    const [sections, setSectionsState] = useState<{ page: string; section: string; label: string; visible: boolean; order: number }[]>(initialData?.sections || []);
 
     const isSectionVisible = useCallback((page: string, section: string) => {
         const s = sections.find((s) => s.page === page && s.section === section);
@@ -163,6 +163,19 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         // Step 4: No data available — mark as loaded (empty state)
         setContentLoaded(true);
     }, [applyData]);
+
+    // Seed the client cache with the server-rendered payload so the
+    // mount refresh below finds a fresh entry and skips a redundant
+    // network fetch (keeps first paint instant, data still refreshes
+    // on the normal 60s TTL / tab-focus cycle).
+    useEffect(() => {
+        if (initialData) {
+            try {
+                localStorage.setItem(CACHE_KEY, JSON.stringify({ ...initialData, fetchedAt: Date.now() }));
+            } catch { /* localStorage unavailable — ignore */ }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         refreshContent();

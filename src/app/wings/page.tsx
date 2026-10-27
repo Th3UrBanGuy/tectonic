@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import WingsClient from "../WingsClient";
 import { getPageSEO } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://tect0nic.com";
+
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSEO('/wings');
@@ -14,6 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
       title: seo.metaTitle || "Wings | Techtonic",
       description: seo.metaDescription || "Explore Techtonic's specialized wings driving innovation in software, robotics, security, and consultancy.",
       type: "website",
+      url: `${siteUrl}/wings`,
+      siteName: "Techtonic",
       images: [{ url: seo.heroImageUrl || "/og-default.png", width: 1200, height: 630, alt: "Techtonic Wings" }],
     },
     twitter: {

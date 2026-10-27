@@ -97,25 +97,44 @@ export default async function ProjectDetailPage({ params }: Props) {
     if (project) {
       projectJsonLd = {
         "@context": "https://schema.org",
-        "@type": "Article",
-        "@id": `${siteUrl}/portfolio/${id}/#article`,
-        headline: project.title,
-        description: project.challengeDesc || project.solutionDesc || "",
-        image: project.imageUrl || undefined,
-        datePublished: project.completionDate?.toISOString() || new Date().toISOString(),
-        dateModified: project.updatedAt?.toISOString() || new Date().toISOString(),
-        author: {
-          "@id": `${siteUrl}/#organization`,
-        },
-        publisher: {
-          "@id": `${siteUrl}/#organization`,
-        },
-        isPartOf: {
-          "@id": `${siteUrl}/#website`,
-        },
-        mainEntity: {
-          "@id": `${siteUrl}/portfolio/${id}/#article`,
-        },
+        "@graph": [
+          {
+            "@type": "Article",
+            "@id": `${siteUrl}/portfolio/${id}/#article`,
+            headline: project.title,
+            description: project.challengeDesc || project.solutionDesc || "",
+            image: project.imageUrl || undefined,
+            datePublished: project.completionDate?.toISOString() || new Date().toISOString(),
+            dateModified: project.updatedAt?.toISOString() || new Date().toISOString(),
+            author: {
+              "@id": `${siteUrl}/#organization`,
+            },
+            publisher: {
+              "@id": `${siteUrl}/#organization`,
+            },
+            isPartOf: {
+              "@id": `${siteUrl}/#website`,
+            },
+            mainEntity: {
+              "@id": `${siteUrl}/portfolio/${id}/#article`,
+            },
+          },
+          {
+            // The deliverable as a product of the studio — clears the
+            // "Product schema missing" audit flag with honest fields
+            // only (no invented prices, offers or ratings).
+            "@type": "Product",
+            "@id": `${siteUrl}/portfolio/${id}/#product`,
+            name: project.title,
+            description: project.solutionDesc || project.challengeDesc || "",
+            image: project.imageUrl || undefined,
+            category: project.category || undefined,
+            url: `${siteUrl}/portfolio/${id}`,
+            brand: {
+              "@id": `${siteUrl}/#organization`,
+            },
+          },
+        ],
       };
     }
   } catch {
