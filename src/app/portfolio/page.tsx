@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import PortfolioClient from "../PortfolioClient";
 import { getPageSEO } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://tect0nic.com";
+
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSEO('/portfolio');
@@ -14,6 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
       title: seo.metaTitle || "Portfolio | Techtonic",
       description: seo.metaDescription || "Explore Techtonic's portfolio of successful projects in software, robotics, and consultancy.",
       type: "website",
+      url: `${siteUrl}/portfolio`,
+      siteName: "Techtonic",
       images: [{ url: seo.heroImageUrl || "/og-default.png", width: 1200, height: 630, alt: "Techtonic Portfolio" }],
     },
     twitter: {

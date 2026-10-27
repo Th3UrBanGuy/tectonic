@@ -78,22 +78,27 @@ function Preloader({ children }: { children: React.ReactNode }) {
     }
   }, [showLoader, mounted, contentLoaded, minTimePassed]);
 
-  // During SSR and before hydration: always show loader (server + client match)
-  // After hydration: show loader or children based on skipLoader
-  if (!mounted || showLoader) {
-    return (
-      <div
-        style={{
-          transition: "opacity 0.4s ease",
-          opacity: mounted && contentLoaded && minTimePassed ? 0 : 1,
-        }}
-      >
-        <Loader />
-      </div>
-    );
-  }
-
-  return <>{children}</>;
+  // Children ALWAYS render — including during SSR — so the page's real
+  // content is present in the HTML for crawlers and first paint.
+  // The loader is a fading overlay on top (same animation, timing and
+  // session behaviour as before); it never replaces the content.
+  const loaderVisible = !mounted || showLoader;
+  return (
+    <>
+      {children}
+      {loaderVisible && (
+        <div
+          className="fixed inset-0 z-[100] bg-white dark:bg-dark-bg"
+          style={{
+            transition: "opacity 0.4s ease",
+            opacity: mounted && contentLoaded && minTimePassed ? 0 : 1,
+          }}
+        >
+          <Loader />
+        </div>
+      )}
+    </>
+  );
 }
 
 /**
@@ -149,15 +154,17 @@ function Chrome({ children }: { children: React.ReactNode }) {
 
 export default function AppShell({
   children,
+  initialContent,
 }: {
   children: React.ReactNode;
+  initialContent?: any;
 }) {
   const [is404, set404] = useState(false);
   return (
     <NotFoundContext.Provider value={{ is404, set404 }}>
       <ThemeProvider>
         <AuthProvider>
-          <ContentProvider>
+          <ContentProvider initialData={initialContent}>
             <Chrome>{children}</Chrome>
           </ContentProvider>
         </AuthProvider>
