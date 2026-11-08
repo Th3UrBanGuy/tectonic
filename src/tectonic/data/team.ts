@@ -15,7 +15,7 @@ export const TEAM: TeamMember[] = [
     role: 'Co-Founder & COO',
     bio: 'Operations, management, execution',
     image: '/assets/images/team/member2.jpg',
-    website: 'https://alahimajnurosama.vercel.app'
+    website: 'https://amiosama.vercel.app'
   },
   {
     id: '3',
