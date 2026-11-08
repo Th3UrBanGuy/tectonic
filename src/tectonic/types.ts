@@ -44,7 +44,7 @@ export interface TeamMember {
   role: string;
   bio: string;
   image: string;
-  website: string;
+  website?: string;
 }
 
 export interface Milestone {

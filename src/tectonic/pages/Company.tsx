@@ -66,6 +66,7 @@ const MemberCard = ({ member, index }: { member: any; index: number }) => {
                 </p>
 
                 <div className="mt-auto border-t border-slate-100 dark:border-white/5 pt-4">
+                    {member.website ? (
                     <a
                         href={member.website}
                         target="_blank"
@@ -80,6 +81,7 @@ const MemberCard = ({ member, index }: { member: any; index: number }) => {
                             <ArrowRight size={14} className="text-slate-400 dark:text-slate-500 group-hover/link:text-brand-600 dark:group-hover/link:text-brand-400 -rotate-45 group-hover/link:rotate-0 transition-transform duration-500" />
                         </div>
                     </a>
+                    ) : null}
                 </div>
             </div>
         </motion.div>

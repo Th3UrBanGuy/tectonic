@@ -22,8 +22,7 @@ export const TEAM: TeamMember[] = [
     name: 'Tajwar Saiyeed Abid',
     role: 'Co-Founder & CTO',
     bio: 'Technology, development, product',
-    image: '/assets/images/team/member3.jpg',
-    website: 'https://Tajwar.app'
+    image: '/assets/images/team/member3.jpg'
   },
   {
     id: '4',
